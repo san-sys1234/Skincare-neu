@@ -251,7 +251,7 @@ function load(){
     const x=JSON.parse(localStorage.getItem(KEY));
     if(x && typeof x==='object'){
       const oldById=new Map((Array.isArray(x.products)?x.products:[]).map(p=>[p.id,p]));
-      const products=seed.map(base=>{const saved=oldById.get(base.id)||{}; const merged={...base,...saved,name:base.name,cat:base.cat,tags:base.tags}; if(base.id==='lan-spf50' && saved.owned===false && !/leer|ausmisten|nicht nach/i.test(String(saved.state||''))){ merged.owned=true; merged.active=true; merged.state='täglich'; } return merged;});
+      const products=seed.map(base=>{const saved=oldById.get(base.id)||{}; const merged={...base,...saved,name:base.name,cat:base.cat,tags:base.tags}; if(saved.owned===false && !/leer|ausmisten|nicht nach|entfernt/i.test(String(saved.state||''))){ merged.owned=base.owned; merged.active=base.active; merged.state=base.state; } if(base.id==='lan-spf50' && saved.owned===false && !/leer|ausmisten|nicht nach/i.test(String(saved.state||''))){ merged.owned=true; merged.active=true; merged.state='täglich'; } return merged;});
       return {
         tab:'today',
         phase:phases[x.phase]?x.phase:'breastfeeding',
@@ -270,11 +270,9 @@ function load(){
 function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function ensureShoppingForMissing(){
   const needs=[];
-  const cleanserMissing=!state.shopping.some(i=>i.id==='shop-cleanser'&&i.bought===false) && !state.shopping.some(i=>/CeraVe Schäumendes Reinigungsgel/i.test(i.name||'')&&i.bought===false);
-  if(cleanserMissing){
-    const d=shoppingDefaults.find(i=>i.id==='shop-cleanser');
-    if(d) needs.push({...d});
-  }
+  const ensure=(id)=>{const d=shoppingDefaults.find(i=>i.id===id); if(d&&!state.shopping.some(i=>i.id===id&&!i.bought)&&!state.shopping.some(i=>i.name===d.name&&!i.bought)) needs.push({...d});};
+  const cleanserMissing=!state.shopping.some(i=>i.name==='CeraVe Schäumendes Reinigungsgel'&&!i.bought);
+  if(cleanserMissing) ensure('shop-cleanser');
   if(needs.length){ state.shopping=[...needs,...state.shopping]; save(); }
 }
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -362,7 +360,7 @@ function weeklyPrepList(){
   const spf=firstAvailable(['lancaster-spf50']);
   const n1=firstAvailable(['chanel-red-camellia']);
   const items=[];
-  const add=(p,day,reason,required=true)=>{ if(p) items.push({id:p.id,name:p.name,day,reason,required:true}); else if(required) items.push({id:'missing-'+day+'-'+reason,name:reason,day,reason:'Noch nicht vorhanden',required:false}); };
+  const add=(p,day,reason,required=true)=>{ if(p) items.push({id:p.id,name:p.name,day,reason,required:true}); else if(required){ let name=reason; let action='⚠️ FEHLT · BITTE KAUFEN'; if(/Gesichtsreiniger/i.test(reason)) name='CeraVe Schäumendes Reinigungsgel'; else if(/^SPF 50/i.test(reason)) name='Lancaster Sun Beauty Face Cream SPF 50'; else if(/Pflegekapsel/i.test(reason)) { name='Dr. Grandel Nutri Sensation Caps'; action='⚪ KEIN KAUF NÖTIG · Gua Sha kann stattdessen mit NIVEA Soft durchgeführt werden.'; } else if(/Hydration Reset/i.test(reason)) action='⚪ KEIN KAUF NÖTIG · Vorhandene Feuchtigkeitsmaske verwenden; kein Neukauf.'; else if(/Eye Rescue/i.test(reason)) action='⚪ KEIN KAUF NÖTIG · Vorhandene Augenpads verwenden; kein Neukauf.'; else if(/Ampullen-Boost/i.test(reason)) action='⚪ KEIN KAUF NÖTIG · Vorhandene arçaya-Ampullen werden nacheinander aufgebraucht.'; items.push({id:'missing-'+day+'-'+reason,name,day,reason:action,required:false,purchase:action.startsWith('⚠️')}); } };
   add(cleanser,'Täglich','Fester täglicher Gesichtsreiniger morgens/abends');
   add(cream,'Täglich','Basiscreme morgens/abends');
   add(spf,'Täglich','SPF 50 morgens');
@@ -395,7 +393,7 @@ function weeklyPrepList(){
 function renderWeeklyPrep(){
   const items=weeklyPrepList();
   const ready=items.filter(x=>x.required), missing=items.filter(x=>!x.required);
-  return `<div class="card week-prep"><details><summary><div class="row"><div><h2>🧺 Diese Woche bereitlegen</h2><p class="muted">Alle Produkte, die du für diese Woche herrichten solltest.</p></div><span class="pill">KW ${isoWeekNumber(new Date())}</span></div></summary><div class="prep-section"><h3>Jeden Tag</h3>${items.filter(x=>x.day==='Täglich').map(x=>`<div class="prep-item"><span>✓</span><div><b>${esc(x.name)}</b><small>${esc(x.reason)}</small></div></div>`).join('')}</div><div class="prep-section"><h3>Zusätzlich nach Wochenplan</h3>${items.filter(x=>x.day!=='Täglich').map(x=>`<div class="prep-item ${x.required?'':'missing'}"><span>${x.required?'✓':'!'}</span><div><b>${esc(x.name)}</b><small><strong>${esc(x.day)}</strong> · ${esc(x.reason)}</small></div></div>`).join('')}</div>${missing.length?`<div class="prep-missing"><b>⚠️ Fehlt diese Woche:</b> ${missing.map(x=>`<span style="display:block;margin-top:4px">${esc(x.name)} · <strong>${esc(missingDecision(x.reason).text)}</strong></span>`).join('')}</div>`:''}</div></details></div>`;
+  return `<div class="card week-prep"><details><summary><div class="row"><div><h2>🧺 Diese Woche bereitlegen</h2><p class="muted">Alle Produkte, die du für diese Woche herrichten solltest.</p></div><span class="pill">KW ${isoWeekNumber(new Date())}</span></div></summary><div class="prep-section"><h3>Jeden Tag</h3>${items.filter(x=>x.day==='Täglich').map(x=>`<div class="prep-item"><span>✓</span><div><b>${esc(x.name)}</b><small>${esc(x.reason)}</small></div></div>`).join('')}</div><div class="prep-section"><h3>Zusätzlich nach Wochenplan</h3>${items.filter(x=>x.day!=='Täglich').map(x=>`<div class="prep-item ${x.required?'':'missing'}"><span>${x.required?'✓':'!'}</span><div><b>${esc(x.name)}</b><small><strong>${esc(x.day)}</strong> · ${esc(x.reason)}</small></div></div>`).join('')}</div>${missing.length?`<div class="prep-missing"><b>⚠️ Fehlt diese Woche:</b> ${missing.map(x=>`<span style="display:block;margin-top:4px"><strong>${esc(x.name)}</strong> · ${esc(x.reason)}</span>`).join('')}</div>`:''}</div></details></div>`;
 }
 function nav(){const items=[['today','Heute'],['week','Woche'],['products','Produkte'],['rituals','Beauty Rituale'],['shopping','Einkaufen'],['longplan','Langzeitplan'],['roadmap','Jahre'],['treatments','Treatments'],['settings','Mehr']];const n=document.getElementById('nav');if(!n)return;n.innerHTML=items.map(x=>`<button class="${state.tab===x[0]?'active':''}" data-tab="${x[0]}">${x[1]}</button>`).join('');n.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab;save();render()})}
 function missingDecision(label){
