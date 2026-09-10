@@ -200,8 +200,8 @@ footer{text-align:center;color:#918680;font-size:11px;padding:22px;letter-spacin
 .check::before{content:"✓ Erledigt";left:0;padding-left:14px;color:#52765f;background:#edf5ef;width:50%;justify-content:flex-start}
 .check::after{content:"Überspringen ↩";right:0;padding-right:14px;color:#8a7168;background:#f3efec;width:50%;justify-content:flex-end}
 .check.swipe-right::before,.check.swipe-left::after{opacity:1}
-.swipe-hint{display:block;font-size:10px;color:var(--muted);margin-left:auto;white-space:nowrap}
-.swipe-hint::before{content:"← überspringen · erledigt →"}
+.swipe-hint{display:none}
+.swipe-hint::before{content:""}
 .task-card::before,.task-card::after,.task::before,.task::after{display:none!important;content:none!important}
 
 
@@ -222,6 +222,7 @@ footer{text-align:center;color:#918680;font-size:11px;padding:22px;letter-spacin
 .restock-box .suggestion{margin:12px 0;padding:12px;border-radius:14px;background:#fff;border:1px solid #eadfd9}
 .restock-box .suggestion small{display:block;margin-top:5px;color:#756b66;line-height:1.4}
  .restock-box .decision-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}.restock-box .decision-head .decision-icon{width:34px;height:34px;border-radius:11px;background:#eadbd3;display:grid;place-items:center;flex:0 0 34px}.top3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}.top3-card{background:#fff;border:1px solid #e7ddd7;border-radius:16px;padding:10px;display:flex;flex-direction:column;min-width:0}.top3-card.top{border-color:#cdb4a7;box-shadow:0 6px 18px rgba(65,48,38,.06)}.top3-photo{width:100%;height:118px;border-radius:12px;background:#f5efeb;display:grid;place-items:center;overflow:hidden;margin-bottom:9px}.top3-photo img{width:100%;height:100%;object-fit:contain;background:#fff}.top3-photo .photo-placeholder{font-size:30px}.top3-rank{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8b6e63;font-weight:700}.top3-card h4{font-size:13px;line-height:1.35;margin:4px 0 3px}.top3-card p{font-size:11px;line-height:1.4;color:#766b65;margin:0 0 8px}.top3-card .secondary,.top3-card .primary{margin-top:auto;width:100%;padding:8px 9px;font-size:12px}.rec-choice{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.rec-choice button{flex:1;min-width:135px}.restock-logic{background:#f7efeb;border-radius:14px;padding:12px;margin:10px 0;font-size:12px}.restock-logic b{color:#5e4e47}.restock-decision{display:flex;gap:8px;align-items:center;margin-bottom:7px;font-weight:700}.restock-decision .decision-badge{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;font-size:10px;letter-spacing:.05em;text-transform:uppercase;background:#e7d8cf;color:#5e4e47}.restock-decision .decision-badge.replace{background:#ead7cc}.restock-decision .decision-badge.none{background:#eee8e3}.restock-decision .decision-badge.wait{background:#eee8e3}.restock-decision .decision-badge.conditional{background:#eee4db}.restock-note{margin:0;color:#766b65;line-height:1.45}.top3-card .recommendation-action{margin-top:7px}.top3-card .recommendation-action.muted-action{background:#f5efeb;color:#766b65;border:1px solid #e4d9d2}@media(max-width:640px){.top3{grid-template-columns:1fr}.top3-card{display:grid;grid-template-columns:78px 1fr;column-gap:10px;align-items:start}.top3-photo{grid-row:1/5;height:90px;margin:0}.top3-card .secondary,.top3-card .primary{grid-column:2}.top3-rank,.top3-card h4,.top3-card p{grid-column:2}}
+<style>.missing-buy{display:block;margin-top:6px;color:#8b4f42;font-weight:700}.missing-none{display:block;margin-top:6px;color:#7b716b}</style>
 </style>
 </head>
 <body>
@@ -383,18 +384,32 @@ function weeklyPrepList(){
 function renderWeeklyPrep(){
   const items=weeklyPrepList();
   const ready=items.filter(x=>x.required), missing=items.filter(x=>!x.required);
-  return `<div class="card week-prep"><details><summary><div class="row"><div><h2>🧺 Diese Woche bereitlegen</h2><p class="muted">Alle Produkte, die du für diese Woche herrichten solltest.</p></div><span class="pill">KW ${isoWeekNumber(new Date())}</span></div></summary><div class="prep-section"><h3>Jeden Tag</h3>${items.filter(x=>x.day==='Täglich').map(x=>`<div class="prep-item"><span>✓</span><div><b>${esc(x.name)}</b><small>${esc(x.reason)}</small></div></div>`).join('')}</div><div class="prep-section"><h3>Zusätzlich nach Wochenplan</h3>${items.filter(x=>x.day!=='Täglich').map(x=>`<div class="prep-item ${x.required?'':'missing'}"><span>${x.required?'✓':'!'}</span><div><b>${esc(x.name)}</b><small><strong>${esc(x.day)}</strong> · ${esc(x.reason)}</small></div></div>`).join('')}</div>${missing.length?`<div class="prep-missing"><b>⚠️ Es fehlt:</b> ${missing.map(x=>esc(x.name)).join(', ')}. Die Einkaufsliste enthält dafür die vorgesehene Lösung, sofern ein Ersatz festgelegt wurde.</div>`:''}</div></details></div>`;
+  return `<div class="card week-prep"><details><summary><div class="row"><div><h2>🧺 Diese Woche bereitlegen</h2><p class="muted">Alle Produkte, die du für diese Woche herrichten solltest.</p></div><span class="pill">KW ${isoWeekNumber(new Date())}</span></div></summary><div class="prep-section"><h3>Jeden Tag</h3>${items.filter(x=>x.day==='Täglich').map(x=>`<div class="prep-item"><span>✓</span><div><b>${esc(x.name)}</b><small>${esc(x.reason)}</small></div></div>`).join('')}</div><div class="prep-section"><h3>Zusätzlich nach Wochenplan</h3>${items.filter(x=>x.day!=='Täglich').map(x=>`<div class="prep-item ${x.required?'':'missing'}"><span>${x.required?'✓':'!'}</span><div><b>${esc(x.name)}</b><small><strong>${esc(x.day)}</strong> · ${esc(x.reason)}</small></div></div>`).join('')}</div>${missing.length?`<div class="prep-missing"><b>⚠️ Fehlt diese Woche:</b> ${missing.map(x=>`<span style="display:block;margin-top:4px">${esc(x.name)} · <strong>${esc(missingDecision(x.reason).text)}</strong></span>`).join('')}</div>`:''}</div></details></div>`;
 }
 function nav(){const items=[['today','Heute'],['week','Woche'],['products','Produkte'],['rituals','Beauty Rituale'],['shopping','Einkaufen'],['longplan','Langzeitplan'],['roadmap','Jahre'],['treatments','Treatments'],['settings','Mehr']];const n=document.getElementById('nav');if(!n)return;n.innerHTML=items.map(x=>`<button class="${state.tab===x[0]?'active':''}" data-tab="${x[0]}">${x[1]}</button>`).join('');n.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab;save();render()})}
+function missingDecision(label){
+  const n=(label||'').toLowerCase();
+  if(n.includes('creme')) return {kind:'buy',text:'⚠️ FEHLT · BITTE KAUFEN: La Roche-Posay Toleriane Dermallergo Creme'};
+  if(n.includes('lancaster spf') || n.includes('spf 50')) return {kind:'buy',text:'⚠️ FEHLT · BITTE KAUFEN: La Roche-Posay Anthelios UVMune 400 Invisible Fluid LSF 50+'};
+  if(n.includes('reinigen')) return {kind:'buy',text:'⚠️ FEHLT · BITTE KAUFEN: CeraVe Hydrating Cleanser / Reinigungslotion'};
+  if(n.includes('peeling-abend')) return {kind:'none',text:'⚪ NICHT KAUFEN · Kein neues Peeling nötig. Die App nutzt vorhandene Peelings in Rotation.'};
+  if(n.includes('gua sha glow')) return {kind:'none',text:'⚪ KEIN KAUF NÖTIG · Das Ritual kann ohne die Kapsel entfallen; Gua Sha ist ein optionales Extra.'};
+  if(n.includes('eye rescue')) return {kind:'none',text:'⚪ KEIN KAUF NÖTIG · Augenpads sind ein optionales Extra; vorhandene Pads werden aufgebraucht.'};
+  if(n.includes('hydration reset')) return {kind:'none',text:'⚪ KEIN KAUF NÖTIG · Eine zusätzliche Maske muss nicht gekauft werden.'};
+  if(n.includes('sunday beauty reset')) return {kind:'none',text:'⚪ KEIN KAUF NÖTIG · Die Ampulle ist ein optionaler Boost und wird nicht ersetzt.'};
+  if(n.includes('serum')) return {kind:'none',text:'⚪ KEIN KAUF NÖTIG · Die Basisroutine funktioniert ohne zusätzliches Serum; vorhandene Seren werden rotiert.'};
+  return {kind:'none',text:'⚪ KEIN KAUF NÖTIG · Dieser Schritt ist ein optionales Extra.'};
+}
 function routineBlock(title,items){
   return `<section class="card"><h2>${title}</h2>${items.map(x=>{
     const key=x[2], status=state.checks[key];
     const done=status==='done'||status===true;
     const disabled=x[1]===false;
+    const miss=disabled?missingDecision(x[0]):null;
     return `<label class="check ${done?'done':''} ${disabled?'disabled':''}" data-swipe="${key}">
       <input type="checkbox" data-check="${key}" ${done?'checked':''} ${disabled?'disabled':''}>
-      <span class="check-main"><b>${esc(x[0])}</b>${disabled?'<small>Nicht verfügbar – bitte Alternative wählen.</small>':''}</span>
-      ${done?'<span class="check-status">✓ erledigt</span>':'<span class="swipe-hint">← · →</span>'}
+      <span class="check-main"><b>${esc(x[0])}</b>${miss?`<small class="${miss.kind==='buy'?'missing-buy':'missing-none'}">${esc(miss.text)}</small>`:''}</span>
+      
     </label>`;
   }).join('')}</section>`;
 }
