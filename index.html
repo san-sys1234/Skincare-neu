@@ -237,6 +237,21 @@ footer{text-align:center;color:#918680;font-size:11px;padding:22px;letter-spacin
 </style>
 </head>
 <body>
+<script>
+/* Defensive cleanup: if a previous cached/corrupted version ever exposed CSS as body text, remove it. */
+(function(){
+  try{
+    const markers=['.product-editor{','.edit-grid{display:grid','.why-box{margin:','.restock-box{margin-top:'];
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+    const nodes=[]; let n;
+    while(n=walker.nextNode()){
+      const t=(n.nodeValue||'').trim();
+      if(markers.some(m=>t.startsWith(m)||t.includes(m))){nodes.push(n)}
+    }
+    nodes.forEach(x=>x.parentNode&&x.parentNode.removeChild(x));
+  }catch(e){}
+})();
+</script>
 <div class="wrap">
 <header><div><p class="brand-kicker">PERSONAL BEAUTY SYSTEM</p><h1>My Skin <span>OS</span></h1><p class="muted">Deine Hautpflege – jedes Produkt einzeln, sinnvoll eingesetzt.</p></div><div class="age"><b>34 → 35</b><small>November 2026</small></div></header>
 <nav id="nav"></nav>
@@ -262,7 +277,7 @@ function load(){
     const x=JSON.parse(localStorage.getItem(KEY));
     if(x && typeof x==='object'){
       const oldById=new Map((Array.isArray(x.products)?x.products:[]).map(p=>[p.id,p]));
-      const products=seed.map(base=>{const saved=oldById.get(base.id)||{}; const merged={...base,...saved,name:base.name,cat:base.cat,tags:base.tags}; if(saved.owned===false && !/leer|ausmisten|nicht nach|entfernt/i.test(String(saved.state||''))){ merged.owned=base.owned; merged.active=base.active; merged.state=base.state; } if(base.id==='lan-spf50' && saved.owned===false && !/leer|ausmisten|nicht nach/i.test(String(saved.state||''))){ merged.owned=true; merged.active=true; merged.state='täglich'; }
+      const products=seed.map(base=>{const saved=oldById.get(base.id)||{}; const merged={...base,...saved,name:base.name,cat:base.cat,tags:base.tags}; if(base.id==='dado-purderm-gel') merged.routineRole=null; if(saved.owned===false && !/leer|ausmisten|nicht nach|entfernt/i.test(String(saved.state||''))){ merged.owned=base.owned; merged.active=base.active; merged.state=base.state; } if(base.id==='lan-spf50' && saved.owned===false && !/leer|ausmisten|nicht nach/i.test(String(saved.state||''))){ merged.owned=true; merged.active=true; merged.state='täglich'; }
         // Diese beiden Produkte wurden durch die frühere Fehlkennzeichnung fälschlich als fehlend
         // behandelt. Solange sie nicht ausdrücklich als leer/ausgemistet markiert wurden, bleiben sie vorhanden.
         if((base.id==='lan-spf50'||base.id==='drgrandel-caps') && saved.owned===false && !/leer|ausmisten|nicht nach|entfernt/i.test(String(saved.state||''))){ merged.owned=true; merged.active=true; merged.state=base.state; }
@@ -289,7 +304,7 @@ function ensureShoppingForMissing(){
   // Der neue CeraVe-Reiniger gehört noch nicht zum vorhandenen Bestand: gekauft ist er erst,
   // wenn er ausdrücklich als Produkt übernommen wurde. Deshalb muss ein erledigter alter
   // Einkaufslisteneintrag nicht verhindern, dass er erneut als fehlend erscheint.
-  const cleanserOwned=state.products.some(p=>p.id==='shop-cleanser'&&p.owned!==false&&p.active!==false);
+  const cleanserOwned=state.products.some(p=>p.name.toLowerCase()==='cerave schäumendes reinigungsgel'&&p.owned!==false&&p.active!==false&&p.state!=='abgelaufen');
   if(!cleanserOwned) ensure('shop-cleanser');
   if(needs.length){ state.shopping=[...needs,...state.shopping]; save(); }
 }
@@ -304,6 +319,14 @@ function pickRoutine(role, ids=[]){
   const roleItems=usableProductsByRole(role);
   if(roleItems.length) return roleItems[roleItems.length-1];
   return firstAvailable(ids);
+}
+function preferredCleanser(){
+  const names=['CeraVe Schäumendes Reinigungsgel','La Roche-Posay Cicaplast Lavant B5 Reinigungsgel','Eucerin DermatoCLEAN [HYALURON] Reinigungsgel'];
+  for(const name of names){
+    const p=state.products.find(x=>x.name.toLowerCase()===name.toLowerCase()&&x.owned!==false&&x.active!==false&&x.state!=='abgelaufen');
+    if(p) return p;
+  }
+  return null;
 }
 function integrationFor(a,n){
   const tags=a.tags||[], cat=a.cat||'';
@@ -338,7 +361,7 @@ function routine(){
   const d=new Date(), dow=d.getDay(), week=isoWeekNumber(d);
   const am=[];
   const pm=[];
-  const cleanser=pickRoutine('cleanser',['dado-purderm-gel']);
+  const cleanser=preferredCleanser();
   const spf=pickRoutine('spf',['lan-spf50']);
   const n1=firstAvailable(['chanel-red-camellia']);
   const cream=pickRoutine('cream',['nivea-soft','dado-purderm-cream','shiseido-vital','dr-eberhardt','pure-vitality','sensai-antiwrinkle','locherber-rose','heliotrop-balance']);
@@ -396,7 +419,7 @@ function routine(){
 function weeklyPrepList(){
   const d=new Date(), week=isoWeekNumber(d), dow=d.getDay();
   const cream=pickRoutine('cream',['nivea-soft','dado-purderm-cream','shiseido-vital','dr-eberhardt','pure-vitality','sensai-antiwrinkle','locherber-rose','heliotrop-balance']);
-  const cleanser=pickRoutine('cleanser',['dado-purderm-gel']);
+  const cleanser=preferredCleanser();
   const spf=pickRoutine('spf',['lan-spf50']);
   const n1=firstAvailable(['chanel-red-camellia']);
   const items=[];
