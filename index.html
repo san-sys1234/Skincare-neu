@@ -231,7 +231,13 @@ footer{text-align:center;color:#918680;font-size:11px;padding:22px;letter-spacin
 .restock-box .suggestion{margin:12px 0;padding:12px;border-radius:14px;background:#fff;border:1px solid #eadfd9}
 .restock-box .suggestion small{display:block;margin-top:5px;color:#756b66;line-height:1.4}
  .restock-box .decision-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}.restock-box .decision-head .decision-icon{width:34px;height:34px;border-radius:11px;background:#eadbd3;display:grid;place-items:center;flex:0 0 34px}.top3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}.top3-card{background:#fff;border:1px solid #e7ddd7;border-radius:16px;padding:10px;display:flex;flex-direction:column;min-width:0}.top3-card.top{border-color:#cdb4a7;box-shadow:0 6px 18px rgba(65,48,38,.06)}.top3-photo{width:100%;height:118px;border-radius:12px;background:#f5efeb;display:grid;place-items:center;overflow:hidden;margin-bottom:9px}.top3-photo img{width:100%;height:100%;object-fit:contain;background:#fff}.top3-photo .photo-placeholder{font-size:30px}.top3-rank{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8b6e63;font-weight:700}.top3-card h4{font-size:13px;line-height:1.35;margin:4px 0 3px}.top3-card p{font-size:11px;line-height:1.4;color:#766b65;margin:0 0 8px}.top3-card .secondary,.top3-card .primary{margin-top:auto;width:100%;padding:8px 9px;font-size:12px}.rec-choice{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.rec-choice button{flex:1;min-width:135px}.restock-logic{background:#f7efeb;border-radius:14px;padding:12px;margin:10px 0;font-size:12px}.restock-logic b{color:#5e4e47}.restock-decision{display:flex;gap:8px;align-items:center;margin-bottom:7px;font-weight:700}.restock-decision .decision-badge{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;font-size:10px;letter-spacing:.05em;text-transform:uppercase;background:#e7d8cf;color:#5e4e47}.restock-decision .decision-badge.replace{background:#ead7cc}.restock-decision .decision-badge.none{background:#eee8e3}.restock-decision .decision-badge.wait{background:#eee8e3}.restock-decision .decision-badge.conditional{background:#eee4db}.restock-note{margin:0;color:#766b65;line-height:1.45}.top3-card .recommendation-action{margin-top:7px}.top3-card .recommendation-action.muted-action{background:#f5efeb;color:#766b65;border:1px solid #e4d9d2}@media(max-width:640px){.top3{grid-template-columns:1fr}.top3-card{display:grid;grid-template-columns:78px 1fr;column-gap:10px;align-items:start}.top3-photo{grid-row:1/5;height:90px;margin:0}.top3-card .secondary,.top3-card .primary{grid-column:2}.top3-rank,.top3-card h4,.top3-card p{grid-column:2}}
-<style>.missing-buy{display:block;margin-top:6px;color:#8b4f42;font-weight:700}.missing-none{display:block;margin-top:6px;color:#7b716b}</style>
+<style>.missing-buy{display:block;margin-top:6px;color:#8b4f42;font-weight:700}.missing-none{display:block;margin-top:6px;color:#7b716b}
+.product-editor{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.72)}
+.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}.product-editor label{display:block;font-size:.78rem;color:var(--muted)}.product-editor input,.product-editor select,.product-editor textarea{width:100%;margin-top:5px}.product-editor textarea{min-height:70px}.why-box{margin:10px 0;padding:11px 13px;border-radius:12px;background:rgba(255,255,255,.65);border-left:3px solid currentColor}.why-box p{margin:5px 0 0;color:var(--muted);font-size:.88rem}
+</style>
+
+.product-editor{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.72)}
+.edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}.product-editor label{display:block;font-size:.78rem;color:var(--muted)}.product-editor input,.product-editor select,.product-editor textarea{width:100%;margin-top:5px}.product-editor textarea{min-height:70px}.why-box{margin:10px 0;padding:11px 13px;border-radius:12px;background:rgba(255,255,255,.65);border-left:3px solid currentColor}.why-box p{margin:5px 0 0;color:var(--muted);font-size:.88rem}
 </style>
 </head>
 <body>
@@ -649,6 +655,41 @@ function recommendationCards(rec,p){
   }).join('')}</div>`:'';
   return `<div class="restock-logic"><div class="restock-decision"><span class="decision-badge ${d.cls}">${d.icon} ${d.label}</span></div><p class="restock-note">${esc(rec.text||d.note)}</p>${cardsHtml}</div>`;
 }
+function recommendationReason(p,rec){
+ const id=p.id||'', n=(p.name||'').toLowerCase(), st=(p.state||'').toLowerCase(), tags=p.tags||[];
+ const reasons={
+  'marionnaud-hydrate':'Der Produktname bzw. die genaue Variante ist auf deinem Foto nicht eindeutig erkennbar. Ich möchte deshalb keine Wirkstoff- oder Verträglichkeitsentscheidung erfinden. Bis zur eindeutigen Identifikation wird es nicht in die Gesichtsroutine eingeplant.',
+  'loreal-age-perfect':'Es handelt sich nur um eine Probe und die genaue Variante ist auf dem Foto nicht eindeutig lesbar. Ohne die genaue Formulierung kann ich nicht seriös beurteilen, welchen Platz sie in deiner Routine haben sollte. Deshalb kein Nachkauf.',
+  'no-niacinamide':'Das Serum ist abgelaufen. Abgelaufene Gesichtspflege soll nicht mehr verwendet werden. Ein Ersatz ist aktuell nicht nötig, weil Niacinamid für deine Routine kein eigener Pflichtschritt ist und wir deine Routine bewusst schlank halten.',
+  'masam-aqua':'Die Creme ist bereits alt und soll deshalb nicht weiterverwendet werden. Du brauchst aber keine spezielle Nachtcreme; eine geeignete Basiscreme reicht. Deshalb wird sie durch eine konkrete Basiscreme ersetzt.',
+  'no-retinol':'Retinoid: aktuell bewusst pausiert. In deiner jetzigen Lebensphase wird es nicht in die aktive Routine integriert und deshalb auch nicht nachgekauft.',
+  'nivea-creme':'Die Creme ist nicht grundsätzlich schlecht, aber für deine Gesichtsroutine gibt es passendere, leichtere Optionen. Deshalb nur bei Bedarf für trockene Stellen/Körper und nicht als Pflichtprodukt.',
+  'estee-daywear':'SPF 15 ist für den täglichen UV-Schutz nicht ausreichend als Ersatz für deinen SPF 50. Daher nur optional als Pflege/Make-up-Basis, nicht als Sonnenschutz-Hauptprodukt.',
+  'chanel-red-camellia':'Diese Lotion ist kein notwendiger zusätzlicher Schritt. Sie kann als optionale Pflege-Rotation dienen, soll aber nicht parallel zu einem Peeling eingeplant werden.',
+  'pc-bha':'BHA kann bei Poren/Textur sinnvoll sein, ist bei deiner aktuellen Routine aber kein täglicher Pflichtschritt. Es wird nur bei Bedarf und getrennt vom AHA/PHA-Abend eingesetzt.',
+  'vandini-brightening':'Die Maske ist ein optionales Extra und kein notwendiger Baustein deiner Basisroutine. Vorhandene Masken werden zuerst aufgebraucht; ein Neukauf ist nicht nötig.',
+  'bodysoul-orchid':'Das ist Körper-/Wellnesspflege und deshalb nicht Teil deiner Gesichtsroutine. Es wird nicht als Gesichtspflege nachgekauft.',
+  'teint-miracle':'Das ist Make-up und gehört nach Pflege und SPF, nicht in die eigentliche Skincare-Wirkstoffroutine.',
+  'gehwol-softening':'Das ist Fußpflege und wird deshalb nicht in die Gesichtsroutine integriert.',
+  'trend-hand-mask':'Das ist Handpflege und nicht Teil der Gesichtsroutine; bei Bedarf verwenden, aber nicht als Skincare-Schritt einplanen.'
+ };
+ if(reasons[id]) return reasons[id];
+ if(rec && rec.type==='wait') return rec.text||'Aktuell pausiert und deshalb in dieser Lebensphase nicht für die aktive Routine vorgesehen.';
+ if(rec && rec.type==='none') return rec.text||'Kein notwendiger Baustein deiner aktuellen Routine; vorhandene Menge kann aufgebraucht werden, aber ein Ersatz ist nicht vorgesehen.';
+ if(st.includes('abgelaufen')) return 'Abgelaufen bzw. zu alt für eine verlässliche Anwendung. Deshalb nicht weiterverwenden; falls die Funktion gebraucht wird, wird ein konkreter Ersatz vorgeschlagen.';
+ if(st.includes('nicht benötigt')||st.includes('nicht nachkaufen')||st.includes('ausmisten')) return 'Für deine aktuelle Routine nicht notwendig bzw. durch bereits vorhandene Produkte ausreichend abgedeckt. Deshalb kein automatischer Nachkauf.';
+ if(tags.some(t=>['aha','pha','bha','exfoliation'].includes(t))) return 'Peeling ist bei deiner Routine ein dosierter Zusatz und wird nicht täglich gebraucht. Vorhandene Peelings werden getrennt rotiert, daher kein automatischer Ersatz.';
+ return '';
+}
+function productReviewForm(p){
+ const r=p.review||{};
+ return `<div class="product-editor review-editor" data-review-editor="${esc(p.id)}"><h4>🔍 Produktprüfung nachholen</h4><p class="muted">Ergänze die fehlenden Angaben. Die App speichert sie lokal, damit das Produkt anschließend eindeutig bewertet werden kann.</p><div class="edit-grid"><label>Exakter Produktname<input data-review-name value="${esc(r.name||p.name)}" placeholder="Marke + genaue Variante"></label><label>Hersteller / Marke<input data-review-brand value="${esc(r.brand||'')}"></label></div><label>INCI / Ingredients<textarea data-review-inci placeholder="Komplette Inhaltsstoffliste hier einfügen …">${esc(r.inci||'')}</textarea><div class="review-photo-grid"><label>📷 Vorderseite<input type="file" accept="image/*" data-review-front></label><label>📷 Rückseite / INCI<input type="file" accept="image/*" data-review-back></label></div><div class="review-preview">${r.front?`<img src="${r.front}" alt="Vorderseite">`:''}${r.back?`<img src="${r.back}" alt="Rückseite / INCI">`:''}</div><div class="row"><button class="primary small" data-save-review="${esc(p.id)}">Prüfung speichern</button><button class="secondary small" data-cancel-review="${esc(p.id)}">Abbrechen</button></div></div>`;
+}
+function reviewIsPending(p){const id=p.id||'',n=(p.name||'').toLowerCase();return id==='marionnaud-hydrate'||id==='loreal-age-perfect'||((p.note||'').toLowerCase().includes('prüfung ausstehend'))||((p.review||{}).pending===true);}
+function productEditForm(p){
+ const cats=['Serum','Creme','Reinigung','Peeling','SPF','Maske','Tuchmaske','Augenpflege','Augenpads','Ampulle','Lotion','Körperpflege','Handpflege','Fußpflege','Make-up','Finish/Make-up','Pflegekapseln','Tool','Probe','Sonstiges'];
+ return `<div class="product-editor" data-editor="${esc(p.id)}"><h4>Produkt bearbeiten</h4><div class="edit-grid"><label>Name<input data-edit-name value="${esc(p.name)}"></label><label>Kategorie<select data-edit-cat>${cats.map(c=>`<option ${c===p.cat?'selected':''}>${esc(c)}</option>`).join('')}</select></label><label>Status<input data-edit-state value="${esc(p.state||'')}"></label><label>Menge<input data-edit-qty type="number" min="0" value="${Number(p.quantity||1)}"></label></div><label>Warum / persönliche Notiz<textarea data-edit-note placeholder="z. B. nur bei trockener Haut, warum pausiert, warum nicht nachkaufen …">${esc(p.note||'')}</textarea><div class="row"><button class="primary small" data-save-product="${esc(p.id)}">Speichern</button><button class="secondary small" data-cancel-edit="${esc(p.id)}">Abbrechen</button></div></div>`;
+}
 function productCard(p){
  const rec=restockRecommendation(p), plan=productPlan(p);
  const stateText=p.state==='aufbrauchen'?'Aufbrauchen':p.state==='Basis'?'Basisroutine':p.state==='gelegentlich'?'Gelegentlich':p.state==='pausiert'?'Pausiert':p.state==='abgelaufen – ersetzen'?'Abgelaufen · ersetzen':p.state==='leer'?'Leer':p.state;
@@ -658,9 +699,10 @@ function productCard(p){
  const notRecommended=!paused && explicitNo;
  const cardClass=paused?'product product-paused':notRecommended?'product product-not-recommended':'product';
  const statusBadge=paused?'<span class="product-status-badge paused">⏸️ aktuell pausiert</span>':notRecommended?'<span class="product-status-badge not-recommended">✕ nicht empfohlen</span>':'';
+ const recReason=notRecommended||paused?recommendationReason(p,rec):'';
  const showDecision=empty||p.id==='masam-aqua'&&p.state==='abgelaufen – ersetzen';
  const recBox=showDecision?`<div class="analysis restock-box"><div class="decision-head"><div class="decision-icon">📦</div><div><h3 style="margin:0">${empty?'Produkt ist leer':'Produkt soll ersetzt werden'}</h3><small class="muted">${empty?'Jetzt einmal entscheiden – danach bleibt die Sammlung übersichtlich.':'Die alte Creme bleibt nicht in deiner aktiven Routine.'}</small></div></div><p><b>${esc(rec.title)}</b></p>${recommendationCards(rec,p)}<div class="rec-choice">${rec.type==='buy'?`<button class="secondary small" data-no-restock="${p.id}">Doch nicht nachkaufen · ausmisten</button>`:''}</div></div>`:'';
- return `<div class="${cardClass}" data-product="${esc(p.name.toLowerCase())}"><div class="row"><div><h3>${esc(p.name)}</h3>${statusBadge}${(p.tags||[]).map(t=>`<span class="pill">${esc(tagMeta[t]||t)}</span>`).join('')}</div><div class="row"><button class="secondary small" data-toggle="${p.id}">${p.active?'Deaktivieren':'Aktivieren'}</button><button class="delete" title="Ausmisten" data-delete="${p.id}">🗑️</button></div></div><p><b>${esc(p.cat)}</b>${p.quantity>1?` · <span class="pill">Menge ${p.quantity}</span>`:''}</p><p class="${p.state&&p.state.includes('abgelaufen')?'bad':''}"><b>Status:</b> ${esc(stateText||'prüfen')}</p><p><b>Mein Einsatz:</b> ${esc(plan)}</p><button class="secondary small empty-button" data-empty="${p.id}">${empty?'↻ Nachkaufentscheidung öffnen':'📦 Als leer markieren'}</button>${recBox}</div>`;
+ return `<div class="${cardClass}" data-product="${esc(p.name.toLowerCase())}"><div class="row"><div><h3>${esc(p.name)}</h3>${statusBadge}${(p.tags||[]).map(t=>`<span class="pill">${esc(tagMeta[t]||t)}</span>`).join('')}</div><div class="row"><button class="secondary small" data-edit-product="${p.id}">✎ Bearbeiten</button><button class="secondary small" data-toggle="${p.id}">${p.active?'Deaktivieren':'Aktivieren'}</button><button class="delete" title="Ausmisten" data-delete="${p.id}">🗑️</button></div></div><p><b>${esc(p.cat)}</b>${p.quantity>1?` · <span class="pill">Menge ${p.quantity}</span>`:''}</p><p class="${p.state&&p.state.includes('abgelaufen')?'bad':''}"><b>Status:</b> ${esc(stateText||'prüfen')}</p><p><b>Mein Einsatz:</b> ${esc(plan)}</p>${recReason?`<div class="why-box"><b>${paused?'Warum pausiert?':'Warum nicht empfohlen?'}</b><p>${esc(recReason)}</p>${reviewIsPending(p)?`<button class="secondary small" data-review-product="${p.id}">🔍 Prüfung nachholen</button>`:''}</div>`:''}${p.note?`<p class="muted"><b>Notiz:</b> ${esc(p.note)}</p>`:''}<button class="secondary small empty-button" data-empty="${p.id}">${empty?'↻ Nachkaufentscheidung öffnen':'📦 Als leer markieren'}</button>${recBox}</div>`;
 }
 function renderShopping(){const open=state.shopping.filter(x=>!x.bought);return `<div class="hero"><div><h2>🛍️ Einkaufen</h2><p>Fehlende Produkte bleiben sichtbar, bis sie erledigt sind. Bei leeren Produkten entscheidet My Skin OS zwischen <b>nachkaufen</b>, <b>ersetzen</b> und <b>nicht nachbestücken</b>.</p></div><span class="pill">${open.length} offen</span></div><div class="card"><h2>Für deine aktuelle Routine</h2>${open.length?open.map(x=>`<div class="shopping"><div><h3>${esc(x.name)}</h3><p>${esc(x.reason)}</p><span class="pill">Priorität: ${esc(x.priority)}</span> ${x.restockType==='alternative'?'<span class="pill">Alternative prüfen</span>':''}</div><button class="secondary small" data-bought="${x.id}">✓ Gekauft & übernehmen</button></div>`).join(''):'<div class="empty">✨ Aktuell fehlt nichts Wesentliches.</div>'}</div><div class="card"><h2>📝 Eigenen Einkauf ergänzen</h2><div class="row"><input id="shopInput" placeholder="z. B. mineralischer SPF 50"><button class="primary" id="shopAdd">＋ Hinzufügen</button></div></div><div class="card"><h2>💡 So funktioniert der Einkauf</h2><p>Wenn du ein empfohlenes Produkt kaufst, kannst du es hier direkt mit <b>„Gekauft & übernehmen“</b> in deine Produktsammlung übernehmen. Es wird anschließend automatisch sinnvoll in deine Routine eingeordnet.</p><p class="muted">Nur bei einem frei eingetragenen Einkauf ohne erkennbare Produktdaten bleibt die Einordnung zunächst neutral.</p></div>`}
 
@@ -781,6 +823,39 @@ document.querySelectorAll('[data-check]').forEach(e=>e.onchange=()=>{
 document.querySelectorAll('[data-go]').forEach(e=>e.onclick=()=>{state.tab=e.dataset.go;save();render()});
 const resetDay=document.getElementById('resetDay');if(resetDay)resetDay.onclick=()=>{if(confirm('Tages-Checkliste wirklich zurücksetzen?')){Object.keys(state.checks).forEach(k=>delete state.checks[k]);save();render();toast('Tages-Checkliste zurückgesetzt.')}};
 const ja=document.getElementById('journalAdd');if(ja)ja.onclick=()=>{const note=prompt('Kurze Notiz zu deiner Haut heute (optional):','')||'';state.journal=[{date:new Date().toISOString().slice(0,10),note},...state.journal.filter(x=>x.date!==new Date().toISOString().slice(0,10))];save();render();toast('Haut-Tagebuch aktualisiert.')};
+document.querySelectorAll('[data-edit-product]').forEach(e=>e.onclick=()=>{
+ const p=state.products.find(x=>x.id===e.dataset.editProduct); if(!p)return;
+ const card=e.closest('.product'); if(!card)return;
+ const existing=card.querySelector('.product-editor'); if(existing){existing.remove();return;}
+ card.insertAdjacentHTML('beforeend',productEditForm(p));
+});
+document.querySelectorAll('[data-review-product]').forEach(e=>e.onclick=()=>{
+ const p=state.products.find(x=>x.id===e.dataset.reviewProduct); if(!p)return;
+ const card=e.closest('.product'); if(!card)return;
+ const existing=card.querySelector('.review-editor'); if(existing){existing.remove();return;}
+ card.insertAdjacentHTML('beforeend',productReviewForm(p));
+ card.querySelectorAll('[data-review-front],[data-review-back]').forEach(inp=>inp.onchange=()=>{
+   const file=inp.files&&inp.files[0]; if(!file)return;
+   const reader=new FileReader(); reader.onload=()=>{inp.dataset.dataUrl=reader.result; const preview=card.querySelector('.review-preview'); const img=document.createElement('img'); img.src=reader.result; img.alt=inp.hasAttribute('data-review-front')?'Vorderseite':'Rückseite / INCI'; preview.appendChild(img);}; reader.readAsDataURL(file);
+ });
+});
+document.querySelectorAll('[data-cancel-review]').forEach(e=>e.onclick=()=>e.closest('.review-editor')?.remove());
+document.querySelectorAll('[data-save-review]').forEach(e=>e.onclick=()=>{
+ const p=state.products.find(x=>x.id===e.dataset.saveReview),box=e.closest('.review-editor'); if(!p||!box)return;
+ const name=box.querySelector('[data-review-name]').value.trim(), brand=box.querySelector('[data-review-brand]').value.trim(), inci=box.querySelector('[data-review-inci]').value.trim();
+ if(!name&&!brand&&!inci&&!box.querySelector('[data-review-front]')?.dataset.dataUrl&&!box.querySelector('[data-review-back]')?.dataset.dataUrl){toast('Bitte mindestens Produktname, INCI oder ein Foto ergänzen.');return;}
+ p.review={...(p.review||{}),name,brand,inci,front:box.querySelector('[data-review-front]')?.dataset.dataUrl||p.review?.front||'',back:box.querySelector('[data-review-back]')?.dataset.dataUrl||p.review?.back||'',pending:true,updatedAt:new Date().toISOString()};
+ p.note=((p.note||'').replace(/\s*Prüfung ausstehend\.?/i,'').trim()+' Prüfung ausstehend.').trim();
+ save();render();toast('Produktprüfung gespeichert.');
+});
+document.querySelectorAll('[data-cancel-edit]').forEach(e=>e.onclick=()=>e.closest('.product-editor')?.remove());
+document.querySelectorAll('[data-save-product]').forEach(e=>e.onclick=()=>{
+ const p=state.products.find(x=>x.id===e.dataset.saveProduct); const box=e.closest('.product-editor'); if(!p||!box)return;
+ const name=box.querySelector('[data-edit-name]').value.trim(); if(!name){toast('Bitte einen Produktnamen eingeben.');return;}
+ p.name=name; p.cat=box.querySelector('[data-edit-cat]').value; p.state=box.querySelector('[data-edit-state]').value.trim()||'neu · geprüft'; p.quantity=Math.max(0,Number(box.querySelector('[data-edit-qty]').value)||1); p.note=box.querySelector('[data-edit-note]').value.trim();
+ if(p.state.toLowerCase().includes('pausiert'))p.active=false;
+ save();render();toast('Produkt geändert.');
+});
 document.querySelectorAll('[data-delete]').forEach(e=>e.onclick=()=>{const p=state.products.find(x=>x.id===e.dataset.delete);if(p&&confirm('„'+p.name+'“ wirklich aus deiner Sammlung ausmisten?')){state.products=state.products.filter(x=>x.id!==p.id);save();render();toast('Produkt ausgemistet.') }});
 document.querySelectorAll('[data-toggle]').forEach(e=>e.onclick=()=>{state.products=state.products.map(p=>p.id===e.dataset.toggle?{...p,active:!p.active}:p);save();render()});
 
