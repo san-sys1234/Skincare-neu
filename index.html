@@ -281,12 +281,25 @@ function routine(){
   const extras={
     0:[['🌙 Sunday Beauty Reset · 15 Min.',true,'ritual-sunday']],
     2:[['💆‍♀️ Gua Sha Glow · 5–8 Min.',true,'ritual-guasha']],
-    4:[['🫧 Peeling-Abend · Garnier PHA + Glycolsäure',available('peeling'),'ritual-peeling']],
+    4:[['🫧 Peeling-Abend · Garnier PHA + Glycolsäure',state.products.some(p=>p.active!==false&&p.owned!==false&&p.state!=='abgelaufen'&&(p.tags||[]).some(t=>['peeling','pha','aha','bha','exfoliation'].includes(t))),'ritual-peeling']],
     5:[['👀 Eye Rescue · optional 5 Min.',true,'ritual-eyes']],
     6:[['💧 Hydration Reset · 10 Min.',true,'ritual-hydration']]
   };
   if(extras[d]) pm.push(extras[d][0]);
   return {am,pm};
+}
+function nav(){const items=[['today','Heute'],['week','Woche'],['products','Produkte'],['rituals','Beauty Rituale'],['shopping','Einkaufen'],['longplan','Langzeitplan'],['roadmap','Jahre'],['treatments','Treatments'],['settings','Mehr']];const n=document.getElementById('nav');if(!n)return;n.innerHTML=items.map(x=>`<button class="${state.tab===x[0]?'active':''}" data-tab="${x[0]}">${x[1]}</button>`).join('');n.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab;save();render()})}
+function routineBlock(title,items){
+  return `<section class="card"><h2>${title}</h2>${items.map(x=>{
+    const key=x[2], status=state.checks[key];
+    const done=status==='done'||status===true;
+    const disabled=x[1]===false;
+    return `<label class="check ${done?'done':''} ${disabled?'disabled':''}">
+      <input type="checkbox" data-check="${key}" ${done?'checked':''} ${disabled?'disabled':''}>
+      <span class="check-main"><b>${esc(x[0])}</b>${disabled?'<small>Nicht verfügbar – bitte Alternative wählen.</small>':''}</span>
+      ${done?'<span class="check-status">✓ erledigt</span>':''}
+    </label>`;
+  }).join('')}</section>`;
 }
 function renderToday(){const r=routine(),open=state.shopping.filter(x=>!x.bought);return `<div class="hero"><div><h2>Heute 🥰</h2><p><b>${phases[state.phase][0]}</b> · ${phases[state.phase][1]}</p></div><select id="phase">${Object.entries(phases).map(([k,v])=>`<option value="${k}" ${k===state.phase?'selected':''}>${v[0]}</option>`).join('')}</select></div><div class="notice">✨ <b>Heute:</b> Deine Beauty-Schritte sind direkt in Morgen und Abend integriert. Zusatzrituale sind bewusst nur an passenden Tagen eingeplant.</div><div class="card"><h2>🛍️ Einkaufen – nur wenn etwas wirklich fehlt</h2><p class="muted">Die Einkaufsliste bleibt bewusst getrennt von deiner heutigen Routine.</p>${open.slice(0,4).map(x=>`<div class="shopping"><div><b>${esc(x.name)}</b><small class="muted" style="display:block">${esc(x.reason)}</small></div><button class="secondary small" data-go="shopping">Zur Liste</button></div>`).join('')||'<p>✨ Deine Einkaufsliste ist aktuell leer.</p>'}</div>${routineBlock('☀️ Morgen',r.am)}${routineBlock('🌙 Abend',r.pm)}<div class="card"><div class="row"><div><h2>✨ Beauty-Ritual heute</h2><p class="muted">Nur wenn du Zeit und Lust hast.</p></div><button class="secondary small" data-go="rituals">Beauty Rituale</button></div><div id="todayRitual"></div></div><div class="card"><button class="secondary" id="resetDay">↺ Tages-Checkliste zurücksetzen</button></div><div class="notice">💡 <b>Anti-Aging-Fokus:</b> SPF konsequent. Stärkere Wirkstoffe kommen erst in die passende Lebensphase – nicht alles gleichzeitig.</div><div class="card"><div class="row"><div><h2>Haut-Tagebuch</h2><p class="muted">Ein kurzer Eintrag reicht.</p></div><button class="secondary" id="journalAdd">＋ Heute dokumentieren</button></div>${state.journal.slice(0,3).map(j=>`<div class="journal"><b>${esc(j.date)}</b>${j.note?` · ${esc(j.note)}`:''}</div>`).join('')}</div>`}
 function renderWeek(){const days=[
