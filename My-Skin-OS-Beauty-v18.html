@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f3ef">
+<title>My Skin OS ✨</title>
+<style>
+:root{
+  --bg:#f7f3ef;
+  --bg2:#fbf8f5;
+  --card:rgba(255,255,255,.92);
+  --ink:#302a27;
+  --muted:#817770;
+  --line:#e9dfd8;
+  --accent:#a8786d;
+  --accent-dark:#76564f;
+  --soft:#f2e8e3;
+  --soft2:#f7efeb;
+  --gold:#b59a76;
+  --good:#52765f;
+  --bad:#ad5c58;
+  --shadow:0 12px 34px rgba(65,48,38,.07);
+  --shadow-sm:0 5px 18px rgba(65,48,38,.05);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 92% 0%,rgba(201,169,155,.13),transparent 27rem),
+    radial-gradient(circle at 0% 32%,rgba(222,204,189,.16),transparent 24rem),
+    var(--bg);
+  font:15px/1.55 -apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:0}
+.wrap{max-width:920px;margin:auto;padding:20px 17px 54px}
+header{
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  align-items:flex-start;
+  padding:8px 4px 20px;
+}
+header:after{
+  content:"";
+  position:absolute;left:4px;right:4px;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--line) 12%,var(--line) 88%,transparent);
+}
+.brand-kicker{
+  margin:0 0 4px;
+  color:var(--accent-dark);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:2.2px;
+  text-transform:uppercase;
+}
+h1{
+  margin:0;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:500;
+  font-size:31px;
+  line-height:1.08;
+  letter-spacing:-.8px;
+}
+h1 span{font-style:italic;color:var(--accent)}
+h2{
+  margin:0 0 9px;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:500;
+  font-size:21px;
+  letter-spacing:-.25px;
+}
+h3{margin:0 0 5px;font-size:16px;font-weight:650;letter-spacing:-.1px}
+p{margin:6px 0}.muted{color:var(--muted)}
+.age{text-align:right;color:var(--muted);padding-top:3px}
+.age b{display:block;color:var(--ink);font-family:Georgia,"Times New Roman",serif;font-size:22px;font-weight:500}
+.age small{display:block;font-size:11px;letter-spacing:.2px}
+nav{
+  display:flex;gap:7px;overflow:auto;padding:13px 1px 15px;
+  position:sticky;top:0;z-index:10;
+  background:linear-gradient(var(--bg) 68%,rgba(247,243,239,0));
+  scrollbar-width:none;
+}
+nav::-webkit-scrollbar{display:none}
+nav button{
+  white-space:nowrap;
+  padding:9px 14px;
+  border-radius:999px;
+  background:rgba(239,231,225,.9);
+  color:#6f645e;
+  border:1px solid rgba(226,214,206,.8);
+  transition:.18s ease;
+}
+nav button:hover{transform:translateY(-1px)}
+nav button.active{
+  background:var(--ink);color:#fff;border-color:var(--ink);
+  box-shadow:0 5px 14px rgba(48,42,39,.14);
+}
+.card,.hero,.notice{
+  background:var(--card);
+  border:1px solid rgba(229,218,210,.9);
+  border-radius:22px;
+  padding:19px;
+  margin:13px 0;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
+}
+.hero{
+  position:relative;overflow:hidden;
+  display:flex;justify-content:space-between;gap:18px;align-items:center;
+  background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(245,234,228,.94));
+}
+.hero:after{
+  content:"";position:absolute;width:170px;height:170px;border-radius:50%;
+  right:-70px;top:-90px;border:1px solid rgba(181,154,118,.18);
+}
+.hero>*{position:relative;z-index:1}
+.hero select{max-width:220px;padding:10px 12px;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--ink)}
+.notice{background:linear-gradient(135deg,var(--soft2),#fbf7f4);box-shadow:none;border-color:#eadcd4}
+.check{
+  display:flex;gap:11px;align-items:flex-start;padding:14px 4px;
+  border-top:1px solid var(--line);position:relative;touch-action:pan-y;overflow:hidden;
+  background:transparent;transition:transform .18s ease,opacity .18s ease;border-radius:12px;
+}
+.check::before,.check::after{content:"";position:absolute;top:0;bottom:0;width:0;z-index:0;transition:width .08s linear}
+.check::before{left:0;background:#d9534f}.check::after{right:0;background:#45a865}
+.check>*{position:relative;z-index:1}.check.swiping{transition:none}
+.check.done{background:#edf5ef}.check.skipped{background:#f3efec}
+.swipe-hint{font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap}
+.check-status{display:inline-block;font-size:12px;margin-left:6px;color:var(--good)}
+.check.skipped .check-status{color:#c94b48}
+.check::before{width:var(--left-width,0)}.check::after{width:var(--right-width,0)}
+.check::before{content:'↩  SKIP';color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;padding-left:14px;box-sizing:border-box}
+.check::after{content:'ERLEDIGT  ✓';color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:flex-end;padding-right:14px;box-sizing:border-box}
+.check:first-of-type{border-top:0}.check input{width:20px;height:20px;accent-color:var(--accent);margin-top:1px}
+.pill{
+  display:inline-block;border-radius:999px;padding:4px 9px;background:#eee6e0;color:#665d58;
+  font-size:11px;margin:3px 4px 0 0;border:1px solid rgba(224,210,201,.8);letter-spacing:.1px
+}
+.pill.buy{background:#f5e2d7;color:#8a503f}.bad{color:var(--bad)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.primary,.secondary,.delete{border-radius:13px;padding:10px 14px;transition:.18s ease}
+.primary{background:var(--ink);color:#fff;box-shadow:0 5px 15px rgba(48,42,39,.12)}
+.primary:hover,.secondary:hover{transform:translateY(-1px)}
+.secondary{background:#eee7e2;color:var(--ink);border:1px solid #e2d8d1}
+.small{padding:7px 10px;font-size:13px}.delete{background:#f7e9e8;color:#a34e4e;font-size:18px;padding:6px 9px}
+input,textarea{width:100%;border:1px solid var(--line);border-radius:13px;background:#fff;padding:11px;margin:5px 0;color:var(--ink);outline:none}
+input:focus,textarea:focus,select:focus{border-color:#c9a99e;box-shadow:0 0 0 3px rgba(168,120,109,.10)}
+textarea{min-height:120px;resize:vertical}.search{max-width:250px}
+.product,.shopping,.treat,.road,.day,.journal{border-top:1px solid var(--line);padding:15px 0}
+.product:first-child,.shopping:first-child{border-top:0}
+.product .row>div:first-child{flex:1}
+.upload{display:block;border:1.5px dashed #cdbdb3;border-radius:15px;padding:15px;text-align:center;background:#fbf7f4;margin:8px 0;color:#655c56}
+.upload input,.import input{display:none}
+.photoBox{display:flex;gap:12px;align-items:center;background:#faf7f5;padding:10px;border-radius:15px}.photoBox img{width:82px;height:82px;object-fit:cover;border-radius:11px}
+.analysis{background:#f4ece7;border-radius:15px;padding:14px;margin-top:12px}.warning{color:#8f4d3d;background:#fae9e3;padding:8px;border-radius:10px}
+.empty{text-align:center;padding:25px;color:var(--muted)}
+footer{text-align:center;color:#918680;font-size:11px;padding:22px;letter-spacing:.2px}
+.toast{position:fixed;left:16px;right:16px;bottom:18px;background:#302a27;color:white;padding:13px 16px;border-radius:15px;text-align:center;z-index:20;box-shadow:var(--shadow)}
+.monthPlan{padding:17px 0;border-top:1px solid var(--line)}
+.monthPlan:first-of-type{border-top:0}
+@media(max-width:600px){
+  .wrap{padding:13px 12px 42px}header{padding-top:5px}.hero{align-items:flex-start;flex-direction:column}
+  .hero select{max-width:none;width:100%}.search{max-width:none}.card{padding:16px;border-radius:19px}
+  h1{font-size:28px}.age b{font-size:20px}
+}
+
+.ritual-hero{background:linear-gradient(135deg,#fffaf6,#f4ece7);border:1px solid #e8ddd5;border-radius:24px;padding:22px;margin-bottom:14px}
+.ritual-hero h2{margin:0 0 5px;font-family:Georgia,serif;font-weight:500;letter-spacing:.01em}
+.ritual-step{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;padding:15px 0;border-bottom:1px solid #eee5df}
+.ritual-step:last-child{border-bottom:0}
+.ritual-num{width:36px;height:36px;border-radius:50%;background:#ead9d2;color:#5e514b;display:grid;place-items:center;font-weight:700;font-size:13px}
+.ritual-step h3{margin:0 0 4px;font-size:15px}
+.ritual-step p{margin:0;color:#746a64;font-size:13px;line-height:1.5}
+.ritual-chip{display:inline-block;margin-top:8px;padding:5px 9px;border-radius:999px;background:#f5ece8;color:#76645b;font-size:11px}
+
+.ritual-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.ritual-card{background:linear-gradient(145deg,#fffdfb,#f7efeb);border:1px solid #e9ddd6;border-radius:20px;padding:17px;position:relative}
+.ritual-card h3{margin:0 0 5px;font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:18px}
+.ritual-card p{margin:0;color:#746a64;font-size:13px;line-height:1.5}
+.ritual-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+.ritual-card .primary{margin-top:13px}
+.ritual-label{position:absolute;right:13px;top:13px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#8a7168}
+.ritual-check{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid #eee5df}
+.ritual-check:last-child{border-bottom:0}
+.ritual-check input{margin-top:4px;accent-color:#8f6b61}
+.ritual-note{font-size:12px;color:#7b706a;margin-top:10px}
+@media(max-width:640px){.ritual-grid{grid-template-columns:1fr}}
+
+.today-ritual{padding:13px 0}.today-ritual b{font-size:16px}.today-ritual small{display:block;margin-top:4px;color:#7b706a}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div><p class="brand-kicker">PERSONAL BEAUTY SYSTEM</p><h1>My Skin <span>OS</span></h1><p class="muted">Deine Hautpflege – jedes Produkt einzeln, sinnvoll eingesetzt.</p></div><div class="age"><b>34 → 35</b><small>November 2026</small></div></header>
+<nav id="nav"></nav>
+<main id="app"></main>
+<footer>My Skin OS · lokal im Browser · konservativ bei Unsicherheit</footer>
+</div>
+<script>
+const KEY='my-skin-os-static-v2';
+const seed=[{"id":"arcaya-hyaluron-glow","name":"arçaya Hyaluron Glow","cat":"Ampulle","tags":["hyaluronic_acid","hydration"],"state":"aufbrauchen","active":true,"owned":true,"needed":false},{"id":"arcaya-hyaluron-intensive","name":"arçaya Hyaluron Intensive","cat":"Ampulle","tags":["hyaluronic_acid","hydration"],"state":"aufbrauchen","active":true,"owned":true,"needed":false},{"id":"arcaya-overnight-repair","name":"arçaya Overnight Repair","cat":"Ampulle","tags":["repair","hydration"],"state":"aufbrauchen","active":true,"owned":true,"needed":false},{"id":"arcaya-super-collagen","name":"arçaya Super Collagen","cat":"Ampulle","tags":["peptides","hydration"],"state":"aufbrauchen","active":true,"owned":true,"needed":false},{"id":"arcaya-hyaluron-ace","name":"arçaya Hyaluron ACE","cat":"Ampulle","tags":["hyaluronic_acid","vitamin_c","hydration"],"state":"aufbrauchen","active":true,"owned":true,"needed":false},{"id":"arcaya-ultra-quick-lift","name":"arçaya Ultra Quick Lift","cat":"Ampulle","tags":["hydration","peptides"],"state":"aufbrauchen","active":true,"owned":true,"needed":false},{"id":"rituals-purify-wipes","name":"The Ritual of Namaste Purify Cleansing Wipes – Moringa & Holy Lotus","cat":"Reinigung","tags":["cleansing"],"state":"aufbrauchen","active":true,"owned":true,"needed":false},{"id":"harvest-restful","name":"Harvest 10 Restful Sleeping Mask","cat":"Maske","tags":["hydration","mask"],"state":"gelegentlich","active":true,"owned":true,"needed":false},{"id":"masam-aqua","name":"M. Asam AQUA INTENSE Supreme Hyaluron Cream","cat":"Creme","tags":["hydration","hyaluronic_acid"],"state":"Basis","active":true,"owned":true,"needed":false},{"id":"nivea-soft","name":"NIVEA Soft Erfrischende Feuchtigkeitscreme","cat":"Creme","tags":["hydration"],"state":"nach Bedarf","active":true,"owned":true,"needed":false},{"id":"gua-sha","name":"Gua-Sha Massage-Tool","cat":"Tool","tags":[],"state":"Wellness","active":true,"owned":true,"needed":false},{"id":"lan-spf50","name":"Lancaster Sun Beauty Face Cream SPF 50","cat":"SPF","tags":["spf50","uv_protection"],"state":"täglich","active":true,"owned":true,"needed":false},{"id":"estee-daywear","name":"Estée Lauder DayWear Multi-Protection Anti-Oxidant Sheer Tint Release Moisturizer SPF 15","cat":"Tagespflege","tags":["hydration"],"state":"optional – SPF 15 ersetzt keinen SPF 50","active":true,"owned":true,"needed":false},{"id":"nivea-eye-remover","name":"NIVEA Waterproof Eye Make-Up Remover","cat":"Augenreinigung","tags":["cleansing"],"state":"bei Make-up","active":true,"owned":true,"needed":false},{"id":"rituals-karma-body","name":"The Ritual of Karma Overnight Body Mask – Hydra-Boost Complex","cat":"Körperpflege","tags":["hydration","mask"],"state":"Körper","active":true,"owned":true,"needed":false},{"id":"skin-systeme-eye","name":"Skin Système Hydrate SOS Eye Cream","cat":"Augenpflege","tags":["hydration"],"state":"optional","active":true,"owned":true,"needed":false},{"id":"no-retinol","name":"Nø Cosmetics Retinol Serum","cat":"Retinoid","tags":["retinol","retinoid"],"state":"pausiert","active":false,"owned":true,"needed":false},{"id":"no-hyaluron","name":"Nø Cosmetics Hyperhydration Hyaluron Serum","cat":"Serum","tags":["hyaluronic_acid","hydration"],"state":"Basis","active":true,"owned":true,"needed":false},{"id":"no-niacinamide","name":"Nø Cosmetics 120h Hydration & Niacinamide Serum (5% Niacinamid)","cat":"Serum","tags":["niacinamide","hyaluronic_acid","hydration"],"state":"abgelaufen – ersetzen","active":false,"owned":true,"needed":true},{"id":"balea-hyaluron","name":"Balea Beauty Effect 5-Fach Hyaluron Serum","cat":"Serum","tags":["hyaluronic_acid","hydration"],"state":"optional – statt mehrere Hyaluron-Seren parallel","active":true,"owned":true,"needed":false},{"id":"rituals-namaste-micellar","name":"The Ritual of Namaste Micellar Water","cat":"Reinigung","tags":["cleansing"],"state":"aufbrauchen","active":true,"owned":true,"needed":false},{"id":"marionnaud-hydrate","name":"Marionnaud Hydrate – Produktname auf Foto teilweise verdeckt","cat":"Pflege","tags":["hydration"],"state":"prüfen","active":true,"owned":true,"needed":false},{"id":"garnier-pha","name":"Garnier SkinActive Sanftes Mizellen-Peelingwasser – 1% PHA + Glycolsäure","cat":"Peeling","tags":["pha","glycolic_acid","exfoliation"],"state":"max. 1×/Woche","active":true,"owned":true,"needed":false},{"id":"chanel-red-camellia","name":"CHANEL N°1 de CHANEL Lotion Revitalisante au Camélia Rouge / Red Camellia Revitalizing Lotion","cat":"Lotion","tags":["hydration"],"state":"optional – nicht mit Peeling stapeln, falls exfolierend","active":true,"owned":true,"needed":false},{"id":"pc-bha","name":"Paula’s Choice Skin Perfecting 2% BHA Liquid Exfoliant","cat":"Peeling","tags":["bha","salicylic_acid","exfoliation","pores"],"state":"nur bei Bedarf / nicht am AHA-PHA-Abend","active":true,"owned":true,"needed":false},{"id":"chanel-hydra","name":"CHANEL Hydra Beauty Micro Serum","cat":"Serum","tags":["hydration"],"state":"optional","active":true,"owned":true,"needed":false},{"id":"sevens-white-collagen","name":"Svenja Walberg The Iconic Original Glass Skin Mask – White Collagen","cat":"Tuchmaske","tags":["hydration","mask"],"state":"gelegentlich","active":true,"owned":true,"needed":false},{"id":"beauty-eye-energy","name":"Beauty Eye Pad Mask – Energy Elixir Pink Grapefruit + Hyaluron + Vitamin C","cat":"Augenpads","tags":["hydration","vitamin_c"],"state":"gelegentlich","active":true,"owned":true,"needed":false},{"id":"rituals-purify-mask","name":"The Ritual of Namaste Purify – Phassoul Powder & Black Mud Mask","cat":"Maske","tags":["mask"],"state":"gelegentlich","active":true,"owned":true,"needed":false},{"id":"bi-care-winter","name":"BI CARE Protecting Winter Care mit Urea","cat":"Pflege","tags":["hydration","barrier"],"state":"Kälte/trockene Haut","active":true,"owned":true,"needed":false},{"id":"loreal-age-perfect","name":"L’Oréal Paris Age Perfect – Probe, genaue Variante auf Foto nicht lesbar","cat":"Probe","tags":["hydration"],"state":"Probe – erst prüfen","active":true,"owned":true,"needed":false},{"id":"dado-purderm-gel","name":"DADO SENS PURDERM Intensivgel – Intensiv Gel / Reinigungsgel","cat":"Reinigung","tags":["cleansing"],"state":"Probe – bei Verträglichkeit aufbrauchen","active":true,"owned":true,"needed":false,"quantity":1},{"id":"dado-purderm-cream","name":"DADO SENS PURDERM Effektcreme – Normalisierende Creme","cat":"Creme","tags":["barrier","hydration"],"state":"Probe – bei Verträglichkeit aufbrauchen","active":true,"owned":true,"needed":false,"quantity":1},{"id":"garnier-hydrabomb","name":"Garnier SkinActive Hydra Bomb Tuchmaske","cat":"Tuchmaske","tags":["hydration","mask"],"state":"gelegentlich","active":true,"owned":true,"needed":false},{"id":"trend-hand-mask","name":"trend IT UP Enriching Moisturizing Hand Mask","cat":"Handpflege","tags":["hydration","mask"],"state":"Handpflege","active":true,"owned":true,"needed":false},{"id":"garnier-vitc","name":"Garnier SkinActive Vitamin Cg Tuchmaske – Ananas-Extrakt","cat":"Tuchmaske","tags":["vitamin_c","hydration","mask"],"state":"gelegentlich","active":true,"owned":true,"needed":false},{"id":"garnier-hyaluron-mask","name":"Garnier SkinActive Hyaluronsäure Tuchmaske – Wassermelonen-Extrakt","cat":"Tuchmaske","tags":["hyaluronic_acid","hydration","mask"],"state":"gelegentlich","active":true,"owned":true,"needed":false},{"id":"beauty-manuka","name":"Beauty Mask Company Manuka Honig Tuchmaske – MGO 250+","cat":"Tuchmaske","tags":["hydration","mask"],"state":"gelegentlich","active":true,"owned":true,"needed":false},{"id":"drgrandel-caps","name":"Dr. Grandel Nutri Sensation Caps","cat":"Supplement/Probe","tags":[],"state":"separat von Gesichtspflege prüfen","active":false,"owned":true,"needed":false},{"id":"shiseido-vital","name":"Shiseido Vital Perfection Uplifting & Firming Cream – Probe","cat":"Creme","tags":["hydration"],"state":"Probe – gelegentlich","active":true,"owned":true,"needed":false},{"id":"garnier-retouch","name":"Garnier Optischer 5 Sek. Retuschierer – Glättendes, korrigierendes Finish","cat":"Finish/Make-up","tags":[],"state":"Make-up/Finish","active":true,"owned":true,"needed":false},{"id":"face-mask-aloe","name":"Face Mask Refreshing Feuchtigkeitsmaske – Aloe Vera, genaue Marke/Variante nicht lesbar","cat":"Maske","tags":["hydration","mask"],"state":"Probe – erst prüfen","active":true,"owned":true,"needed":false},{"id":"dr-eberhardt","name":"Dr. Eberhardt Moisture Cream","cat":"Creme","tags":["hydration"],"state":"Probe – gelegentlich","active":true,"owned":true,"needed":false},{"id":"sofri-amber","name":"SOFRI Color Energy Basic Cream Amber","cat":"Creme","tags":["hydration"],"state":"Probe – Make-up/Basisprodukt","active":true,"owned":true,"needed":false},{"id":"pure-vitality","name":"Pure Vitality Skin Renewing Cream – Red Ginseng Root & Manuka Honey","cat":"Creme","tags":["hydration","repair"],"state":"Probe – genaue Marke auf Foto nicht eindeutig","active":true,"owned":true,"needed":false},{"id":"sensai-antiwrinkle","name":"SENSAI Anti-Wrinkle & Radiance Care Cream – Probe","cat":"Creme","tags":["hydration"],"state":"Probe – gelegentlich","active":true,"owned":true,"needed":false},{"id":"locherber-rose","name":"Locherber Crème Fluida Bouquet di Rose","cat":"Creme","tags":["hydration"],"state":"Probe – gelegentlich","active":true,"owned":true,"needed":false},{"id":"sofri-coolrose","name":"SOFRI Color Energy Cool Rose","cat":"Creme","tags":["hydration"],"state":"Probe – Make-up/Basisprodukt","active":true,"owned":true,"needed":false},{"id":"heliotrop-eye","name":"Heliotrop Q10-Augenfluid Vital","cat":"Augenpflege","tags":["hydration"],"state":"Probe – gelegentlich","active":true,"owned":true,"needed":false},{"id":"heliotrop-balance","name":"Heliotrop Tagescreme Balance","cat":"Tagescreme","tags":["hydration"],"state":"Probe – gelegentlich","active":true,"owned":true,"needed":false},{"id":"hyaluron-gurken","name":"Hyaluron & Gurkenextrakt Augenpflege – 4 × 1 ml","cat":"Augenpflege","tags":["hyaluronic_acid","hydration"],"state":"aufbrauchen","active":true,"owned":true,"needed":false,"quantity":4},{"id":"vandini-brightening","name":"alv? VANDINI Brightening Leave-on Maske – genaue Linie laut Foto","cat":"Maske","tags":["mask"],"state":"Probe – erst prüfen","active":true,"owned":true,"needed":false},{"id":"bodysoul-orchid","name":"BODYSOUL Wellness Zarte Verführung Verwöhnmaske – Orchidee & Parnassus","cat":"Maske","tags":["hydration","mask"],"state":"Körper/Wellness","active":true,"owned":true,"needed":false},{"id":"teint-miracle","name":"Lancôme Teint Miracle – Probe","cat":"Make-up","tags":[],"state":"Make-up","active":true,"owned":true,"needed":false},{"id":"gehwol-softening","name":"GEHWOL Softening-Balsam","cat":"Fußpflege","tags":["hydration"],"state":"Fußpflege","active":true,"owned":true,"needed":false},{"id":"vichy-idealia","name":"Vichy Idéalia Life Serum – Probe","cat":"Serum","tags":["hydration"],"state":"Probe – gelegentlich","active":true,"owned":true,"needed":false},{"id":"schaebens-hyaluron","name":"Schaebens Hyaluron Hydrogel Augen-Pads","cat":"Augenpads","tags":["hyaluronic_acid","hydration"],"state":"gelegentlich","active":true,"owned":true,"needed":false},{"id":"schaebens-cooling","name":"Schaebens Cooling Hydro Augen Gel-Pads – Extra lange Pads","cat":"Augenpads","tags":["hydration"],"state":"gelegentlich","active":true,"owned":true,"needed":false},{"id":"balea-cherry-love-lippenmaske","name":"Balea Cherry Love Hydrogel Lippenmaske","cat":"Lippenpflege","tags":["hydration","mask"],"state":"gelegentlich","active":true,"owned":true,"needed":false},{"id":"lancome-genifique","name":"Lancôme Advanced Génifique Serum","cat":"Serum","tags":["repair","hydration"],"state":"optional / Rotation","active":true,"owned":true,"needed":false},{"id":"shiseido-ultimune","name":"Shiseido Ultimune Power Infusing Concentrate","cat":"Serum","tags":["repair","hydration"],"state":"optional / Rotation","active":true,"owned":true,"needed":false},{"id":"nivea-creme","name":"NIVEA Creme","cat":"Creme","tags":["barrier","hydration"],"state":"nach Bedarf / Körper","active":true,"owned":true,"needed":false},{"id":"chanel-sublimage-lotion","name":"CHANEL Sublimage Lotion Lumière Exfoliante","cat":"Lotion/Peeling","tags":["exfoliation"],"state":"prüfen – nicht mit anderem Peeling kombinieren","active":true,"owned":true,"needed":false}];
+const photoAudit=["arçaya Hyaluron Glow","arçaya Hyaluron Intensive","arçaya Overnight Repair","arçaya Super Collagen","arçaya Hyaluron ACE","arçaya Ultra Quick Lift","The Ritual of Namaste Purify Cleansing Wipes – Moringa & Holy Lotus","Harvest 10 Restful Sleeping Mask","M. Asam AQUA INTENSE Supreme Hyaluron Cream","NIVEA Soft Erfrischende Feuchtigkeitscreme","Gua-Sha Massage-Tool","Lancaster Sun Beauty Face Cream SPF 50","Estée Lauder DayWear Multi-Protection Anti-Oxidant Sheer Tint Release Moisturizer SPF 15","NIVEA Waterproof Eye Make-Up Remover","The Ritual of Karma Overnight Body Mask – Hydra-Boost Complex","Skin Système Hydrate SOS Eye Cream","Marionnaud Hydrate – Produktname auf Foto teilweise verdeckt","Nø Cosmetics Retinol Serum","Nø Cosmetics Hyperhydration Hyaluron Serum","Nø Cosmetics 120h Hydration & Niacinamide Serum (5% Niacinamid)","Balea Beauty Effect 5-Fach Hyaluron Serum","The Ritual of Namaste Micellar Water","Garnier SkinActive Sanftes Mizellen-Peelingwasser – 1% PHA + Glycolsäure","CHANEL N°1 de CHANEL Lotion Revitalisante au Camélia Rouge / Red Camellia Revitalizing Lotion","Paula’s Choice Skin Perfecting 2% BHA Liquid Exfoliant","CHANEL Hydra Beauty Micro Serum","Svenja Walberg The Iconic Original Glass Skin Mask – White Collagen","Beauty Eye Pad Mask – Energy Elixir Pink Grapefruit + Hyaluron + Vitamin C","The Ritual of Namaste Purify – Phassoul Powder & Black Mud Mask","BI CARE Protecting Winter Care mit Urea","L’Oréal Paris Age Perfect – Probe, genaue Variante auf Foto nicht lesbar","DADO SENS PURDERM Intensivgel","DADO SENS PURDERM Effektcreme","Garnier SkinActive Hydra Bomb Tuchmaske","trend IT UP Enriching Moisturizing Hand Mask","Garnier SkinActive Vitamin Cg Tuchmaske – Ananas-Extrakt","Garnier SkinActive Hyaluronsäure Tuchmaske – Wassermelonen-Extrakt","Beauty Mask Company Manuka Honig Tuchmaske – MGO 250+","Dr. Grandel Nutri Sensation Caps","Shiseido Vital Perfection Uplifting & Firming Cream – Probe","Garnier Optischer 5 Sek. Retuschierer – Glättendes, korrigierendes Finish","Face Mask Refreshing Feuchtigkeitsmaske – Aloe Vera, genaue Marke/Variante nicht lesbar","Dr. Eberhardt Moisture Cream","SOFRI Color Energy Basic Cream Amber","Pure Vitality Skin Renewing Cream – Red Ginseng Root & Manuka Honey","SENSAI Anti-Wrinkle & Radiance Care Cream – Probe","Locherber Crème Fluida Bouquet di Rose","SOFRI Color Energy Cool Rose","Heliotrop Q10-Augenfluid Vital","Heliotrop Tagescreme Balance","Hyaluron & Gurkenextrakt Augenpflege – 4 × 1 ml","VANDINI Brightening Leave-on Maske","BODYSOUL Wellness Zarte Verführung Verwöhnmaske – Orchidee & Parnassus","Lancôme Teint Miracle – Probe","GEHWOL Softening-Balsam","Vichy Idéalia Life Serum – Probe","Schaebens Hyaluron Hydrogel Augen-Pads","Schaebens Cooling Hydro Augen Gel-Pads – Extra lange Pads","Balea Cherry Love Hydrogel Lippenmaske","Lancôme Advanced Génifique Serum","Shiseido Ultimune Power Infusing Concentrate","NIVEA Creme","CHANEL Sublimage Lotion Lumière Exfoliante"];
+const phases={breastfeeding:['🍼 Stillzeit','Basis: Feuchtigkeit, Niacinamid und täglicher SPF. Retinoide pausieren.'],ttc:['🥰 Kinderwunsch','Routine stabil halten; Retinoide nicht aktivieren.'],pregnancy:['🤰 Schwangerschaft','Sanfte Basics + SPF; Retinoide vermeiden.'],post:['✨ Nach Stillzeit','Wenn keine Schwangerschaft geplant ist: Retinoid langsam und kontrolliert aufbauen.']};
+const tagMeta={retinoid:'Retinoid',niacinamide:'Niacinamid',vitamin_c:'Vitamin C',hyaluronic_acid:'Hyaluron',aha:'AHA',pha:'PHA',bha:'BHA',ceramides:'Ceramide',peptides:'Peptide',spf50:'SPF 50+',cleansing:'Reinigung',mask:'Maske',exfoliation:'Peeling',hydration:'Feuchtigkeit',barrier:'Barriereschutz',repair:'Repair'};
+const shoppingDefaults=[
+{id:'shop-niacinamide',name:'Frisches 4–5% Niacinamid-Serum',reason:'Dein bisheriges Niacinamid-Serum ist abgelaufen und soll die Basisroutine vervollständigen.',priority:'hoch',tags:['niacinamide'],bought:false},
+{id:'shop-cleanser',name:'Sanfter Gesichtsreiniger',reason:'Für eine zuverlässige, hautschonende Reinigung morgens/abends.',priority:'mittel',tags:['cleansing'],bought:false}
+];
+const rules=[
+[/retinol|retinal|tretinoin|adapalene|retinoid/,'retinoid'],[/niacinamide/,'niacinamide'],[/vitamin\\s*c|ascorbic|ascorbyl/,'vitamin_c'],[/hyaluron|hyaluronic/,'hyaluronic_acid'],[/glycolic|lactic|mandelic|aha/,'aha'],[/pha|gluconolactone|lactobionic/,'pha'],[/salicylic|bha/,'bha'],[/ceramide/,'ceramides'],[/peptide/,'peptides'],[/spf\\s*([3-9]\\d)|sun protection|sunscreen/,'spf50'],[/cleanser|reiniger|reinigung|micellar|mizellen/,'cleansing'],[/maske|mask|patch|pads/,'mask']];
+const blockedPhases=['breastfeeding','ttc','pregnancy'];
+let state=load();
+function load(){
+  try{
+    const x=JSON.parse(localStorage.getItem(KEY));
+    if(x){
+      const oldById=new Map((x.products||[]).map(p=>[p.id,p]));
+      const products=seed.map(base=>({...base,...(oldById.get(base.id)||{}),name:base.name,cat:base.cat,tags:base.tags,state:(oldById.get(base.id)?.state||base.state)}));
+      return {...x,tab:'today',products};
+    }
+  }catch(e){}
+  return{tab:'today',phase:'breastfeeding',products:seed,checks:{},shopping:shoppingDefaults,journal:[]}
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2500)}
+function analyze(name,inci=''){const text=(name+' '+inci).toLowerCase(),tags=[...new Set(rules.filter(x=>x[0].test(text)).map(x=>x[1]))];if(/glycerin|betaine|panthenol|hyaluron/.test(text)&&!tags.includes('hydration'))tags.push('hydration');if(/exfoliat|peel|peeling/.test(text)&&!tags.includes('exfoliation'))tags.push('exfoliation');const blocked=tags.includes('retinoid')&&blockedPhases.includes(state.phase);let cat=tags.includes('retinoid')?'Retinoid':tags.includes('spf50')?'SPF':tags.some(t=>['aha','pha','bha','exfoliation'].includes(t))?'Peeling':tags.includes('cleansing')?'Reinigung':tags.includes('mask')?'Maske':/cream|creme|moistur|lotion/i.test(text)?'Creme':'Serum';let slot='Manuell prüfen',reason='Die INCI ist nicht eindeutig genug. Bitte vollständig prüfen.';if(tags.includes('cleansing'))[slot,reason]=['Morgens/abends · Reinigung','Vor Seren und Cremes.'];else if(tags.includes('spf50'))[slot,reason]=['Morgens · letzter Schritt','Täglich großzügig und als letzten Pflegeschritt anwenden.'];else if(blocked)[slot,reason]=['Pausieren · aktuell nicht aktivieren','Enthält ein Retinoid; in deiner aktuellen Lebensphase nicht als Routinewirkstoff einplanen.'];else if(tags.includes('retinoid'))[slot,reason]=['Abends · langsam einschleichen','Nur nach der passenden Lebensphase und bei Unsicherheit nach fachlicher Rücksprache.'];else if(tags.some(t=>['aha','pha','bha','exfoliation'].includes(t)))[slot,reason]=['Abends · Peelingabend','Nicht mehrere Peelings am selben Abend kombinieren. Bei Reizung pausieren.'];else if(tags.includes('vitamin_c'))[slot,reason]=['Morgens · vor Creme/SPF','Optionaler antioxidativer Schritt.'];else if(tags.includes('niacinamide'))[slot,reason]=['Morgens · nach Reinigung','Passt gut in die einfache Basisroutine.'];else if(tags.some(t=>['hyaluronic_acid','ceramides','peptides'].includes(t)))[slot,reason]=['Morgens oder abends · vor Creme','Pflege-/Barriereschritt.'];const conflicts=[];if(tags.includes('retinoid')&&tags.some(t=>['aha','pha','bha','exfoliation'].includes(t)))conflicts.push('Retinoid + Peeling: nicht am selben Abend.');if(tags.filter(t=>['aha','pha','bha','exfoliation'].includes(t)).length>=2)conflicts.push('Mehrere Peeling-Wirkstoffe erkannt: langsam und getrennt einsetzen.');return{tags,cat,slot,reason,blocked,conflicts}}
+function available(tag){return state.products.some(p=>p.active!==false&&p.owned!==false&&p.state!=='abgelaufen'&&(p.tags||[]).includes(tag))}
+function routine(){return{am:[['Kurz reinigen/abspülen',true,'am0'],['Niacinamid',available('niacinamide'),'am1'],['M. Asam Hyaluron Cream',available('hydration'),'am2'],['Lancaster SPF 50',available('spf50'),'am3']],pm:[['Reinigen',available('cleansing'),'pm0'],['Nø Hyaluron Serum',available('hyaluronic_acid'),'pm1'],['M. Asam Hyaluron Cream',available('hydration'),'pm2']]}}
+function nav(){const items=[['today','Heute'],['week','Woche'],['products','Produkte'],['rituals','Beauty Rituale'],['shopping','Einkaufen'],['longplan','Langzeitplan'],['roadmap','Jahre'],['treatments','Treatments'],['settings','Mehr']];document.getElementById('nav').innerHTML=items.map(x=>`<button class="${state.tab===x[0]?'active':''}" data-tab="${x[0]}">${x[1]}</button>`).join('');document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab;save();render()})}
+function routineBlock(title,items){
+  return `<section class="card"><h2>${title}</h2><p class="muted" style="font-size:12px;margin-top:-2px">← links: skippen · rechts: erledigt →</p>${items.map(x=>{
+    const key=x[2], status=state.checks[key];
+    const done=status==='done'||status===true, skipped=status==='skipped';
+    return `<div class="check ${done?'done':''} ${skipped?'skipped':''}" data-swipe="${key}">
+      <input type="checkbox" ${done?'checked':''} ${x[1]?'':'disabled'} data-check="${key}">
+      <span>${esc(x[0])} ${x[1]?'':'<span class="pill buy">🛍️ fehlt · kaufen</span>'}
+      ${done?'<span class="check-status">✓ erledigt</span>':skipped?'<span class="check-status">↩ übersprungen</span>':''}</span>
+      <span class="swipe-hint">← / →</span>
+    </div>`;
+  }).join('')}</section>`;
+}
+function renderToday(){const r=routine(),open=state.shopping.filter(x=>!x.bought);return `<div class="hero"><div><h2>Heute 🥰</h2><p><b>${phases[state.phase][0]}</b> · ${phases[state.phase][1]}</p></div><select id="phase">${Object.entries(phases).map(([k,v])=>`<option value="${k}" ${k===state.phase?'selected':''}>${v[0]}</option>`).join('')}</select></div><div class="notice">👆 <b>Tages-Checkliste:</b> Wische einen Schritt <b>nach rechts</b> für „erledigt“ oder <b>nach links</b> für „skippen“. Du kannst den Schritt danach weiterhin über die Checkliste zurücksetzen.</div><div class="card"><h2>🛍️ Einkaufen – nur wenn etwas wirklich fehlt</h2><p class="muted">Die Einkaufsliste bleibt bewusst getrennt von deiner heutigen Routine.</p>${open.slice(0,4).map(x=>`<div class="shopping"><div><b>${esc(x.name)}</b><small class="muted" style="display:block">${esc(x.reason)}</small></div><button class="secondary small" data-go="shopping">Zur Liste</button></div>`).join('')||'<p>✨ Deine Einkaufsliste ist aktuell leer.</p>'}</div>${routineBlock('☀️ Morgen',r.am)}${routineBlock('🌙 Abend',r.pm)}<div class="card"><div class="row"><div><h2>✨ Beauty-Ritual heute</h2><p class="muted">Nur wenn du Zeit und Lust hast.</p></div><button class="secondary small" data-go="rituals">Beauty Rituale</button></div><div id="todayRitual"></div></div><div class="card"><button class="primary" data-go="rituals">✨ Beauty Rituale öffnen</button></div><div class="card"><button class="secondary" id="resetDay">↺ Tages-Checkliste zurücksetzen</button></div><div class="notice">💡 <b>Anti-Aging-Fokus:</b> SPF konsequent. Stärkere Wirkstoffe kommen erst in die passende Lebensphase – nicht alles gleichzeitig.</div><div class="card"><div class="row"><div><h2>Haut-Tagebuch</h2><p class="muted">Ein kurzer Eintrag reicht.</p></div><button class="secondary" id="journalAdd">＋ Heute dokumentieren</button></div>${state.journal.slice(0,3).map(j=>`<div class="journal"><b>${esc(j.date)}</b>${j.note?` · ${esc(j.note)}`:''}</div>`).join('')}</div>`}
+function renderWeek(){const days=[
+['Montag','🤍','Basisroutine','Kein Zusatzritual – Erholungstag.'],
+['Dienstag','💆‍♀️','Gua Sha Glow','5–8 Min.; sanft und mit ausreichend Gleitfähigkeit.'],
+['Mittwoch','🤍','Basisroutine','Bewusster Ruheabend.'],
+['Donnerstag','🫧','Peeling-Abend','Garnier PHA/Glycol oder alternativ BHA – nicht kombinieren; kein Gua Sha.'],
+['Freitag','👀','Eye Rescue · optional','5 Min. nur wenn du Zeit und Lust hast.'],
+['Samstag','💧','Hydration Reset','10 Min.; Feuchtigkeitsmaske passend zum Hautgefühl.'],
+['Sonntag','🌙','Sunday Beauty Reset','15 Min.; Wochenabschluss mit Feuchtigkeit und optional Lippen/Hände/Augenpads.']
+];return `<div class="hero"><div><h2>Beauty-Kalender ✨</h2><p class="muted">Die Rituale sind nach Sinnhaftigkeit verteilt – nicht nach dem Motto „jeden Tag muss etwas passieren“.</p></div><span class="pill">7 Tage · 4 echte Extras</span></div>${days.map(x=>`<div class="card day"><div class="row"><b>${x[0]}</b><span class="pill">${x[1]} ${x[2]}</span></div><p>☀️ Basis: Reinigung → Niacinamid → Creme → SPF 50</p><p class="muted">${x[3]}</p></div>`).join('')}<div class="notice">🧠 <b>Warum so?</b> Gua Sha liegt nicht auf dem Peeling-Abend, Hydration bekommt einen eigenen Termin und zwei Tage bleiben bewusst ruhig. So bleibt die Routine wirksam, aber alltagstauglich.</div>`}
+
+function renderProducts(){const p=state.products;return `<div class="card"><h2>📷 Produkt-Scanner</h2><p class="muted">Foto vom Etikett aufnehmen. Der erkannte Text kann vor der Analyse korrigiert werden.</p><label class="upload">📷 Foto aufnehmen / auswählen<input id="photo" type="file" accept="image/*" capture="environment"></label><div id="photoArea"></div><input id="pname" placeholder="Produktname"><textarea id="inci" placeholder="Vollständige INCI hier einfügen (je vollständiger, desto besser)"></textarea><button class="primary" id="analyze">🔎 Analysieren</button><div id="analysis"></div></div><div class="card"><div class="row"><div><h2>Meine Beauty Collection</h2><p class="muted"><b>63 Produkte</b> · jedes auf deinen Fotos erkennbare Produkt hat einen eigenen Eintrag. Unsichere Namen sind ausdrücklich markiert statt erfunden.</p><p class="muted"><b>⏸️ Deaktivieren</b> = behalten · <b>🗑️ Ausmisten</b> = entfernen</p></div><input class="search" id="filter" placeholder="Suchen…"></div><div id="productList">${p.map(productCard).join('')}</div></div>`}
+
+function restockRecommendation(p){
+  const tags = p.tags || [];
+  const name = (p.name || '').toLowerCase();
+  const same = state.products.filter(x =>
+    x.id !== p.id && x.owned !== false && x.state !== 'abgelaufen' &&
+    (x.tags || []).some(t => tags.includes(t)) &&
+    x.cat === p.cat
+  );
+  const alternatives = same.slice(0,3);
+
+  // Products that are not worth automatically replacing.
+  if (tags.includes('retinoid')) {
+    return {type:'wait', title:'Nicht automatisch nachbestellen', text:'Retinoid bleibt in deiner aktuellen Lebensphase pausiert. Erst später neu entscheiden.', alternatives:[]};
+  }
+  if (p.cat === 'Make-up' || p.cat === 'Probe' || p.cat === 'Supplement/Probe' || p.cat === 'Tool' ||
+      p.cat === 'Körperpflege' || p.cat === 'Handpflege' || p.cat === 'Fußpflege' || p.cat === 'Augenreinigung') {
+    return {type:'none', title:'Nicht automatisch nachbestücken', text:'Dieses Produkt ist kein zentraler Bestandteil deiner Gesichtspflege-Basis. Du kannst es bei Bedarf selbst nachkaufen.', alternatives:[]};
+  }
+
+  // Core products: replace with the same product if it fills a unique need.
+  if (tags.includes('spf50')) {
+    return {type:'buy', title:'Nachkaufen: JA', text:'Täglicher SPF 50 ist ein Kernbaustein deiner Anti-Aging-Routine. Wenn du ihn gut verträgst, ist derselbe Produkttyp sinnvoll.', alternatives};
+  }
+  if (tags.includes('niacinamide')) {
+    const fresh = alternatives.find(x => (x.tags||[]).includes('niacinamide') && x.state !== 'abgelaufen');
+    if (fresh) return {type:'alternative', title:'Nicht zwingend dasselbe nachkaufen', text:'Du hast bereits eine passende Niacinamid-Alternative. Erst diese verwenden, statt doppelt einzukaufen.', alternatives:[fresh]};
+    return {type:'buy', title:'Nachkaufen: JA', text:'Niacinamid passt zu deiner Basisroutine. Ein frisches Produkt im Bereich ca. 4–5% ist die bevorzugte Nachbestückung.', alternatives};
+  }
+  if (tags.includes('cleansing')) {
+    const fresh = alternatives.find(x => x.id !== p.id && x.state !== 'abgelaufen');
+    if (fresh) return {type:'alternative', title:'Alternative vorhanden', text:'Du besitzt bereits eine passende Reinigung. Erst diese aufbrauchen, statt das leere Produkt 1:1 zu ersetzen.', alternatives:[fresh]};
+    return {type:'buy', title:'Nachkaufen: JA', text:'Eine sanfte Reinigung ist ein dauerhafter Basisbaustein.', alternatives};
+  }
+  if (tags.includes('hyaluronic_acid') || tags.includes('hydration') || tags.includes('barrier')) {
+    const fresh = alternatives.find(x => x.state !== 'abgelaufen' && x.active !== false);
+    if (fresh) return {type:'alternative', title:'Nicht zwingend nachkaufen', text:'Deine Sammlung enthält bereits passende Feuchtigkeits-/Barriereschritte. Erst vorhandene Produkte verwenden.', alternatives:[fresh]};
+    return {type:'conditional', title:'Nur bei Bedarf nachkaufen', text:'Feuchtigkeit ist sinnvoll, aber du musst nicht mehrere ähnliche Produkte besitzen. Nachkaufen erst, wenn kein passender Ersatz mehr vorhanden ist.', alternatives};
+  }
+  if (tags.some(t => ['aha','pha','bha','exfoliation'].includes(t))) {
+    return {type:'conditional', title:'Nur bei konkretem Bedarf', text:'Peelings sind kein Pflichtschritt für jeden Tag. Erst prüfen, ob du sie für Poren/Unreinheiten/Textur tatsächlich brauchst.', alternatives};
+  }
+  if (tags.includes('mask')) {
+    return {type:'none', title:'Nicht automatisch nachbestellen', text:'Masken sind ein optionaler Zusatz. Erst aufbrauchen und danach nur nachkaufen, wenn du diesen Schritt wirklich gerne nutzt.', alternatives};
+  }
+  if (p.cat === 'Augenpflege' || p.cat === 'Augenpads' || p.cat === 'Tuchmaske') {
+    return {type:'none', title:'Nicht automatisch nachbestellen', text:'Optionaler Zusatz. Nicht nachbestücken, solange kein konkreter Bedarf besteht.', alternatives};
+  }
+  return {type:'conditional', title:'Nachkauf prüfen', text:'Die App möchte hier nicht blind nachkaufen. Erst prüfen, ob das Produkt eine einzigartige Aufgabe erfüllt oder bereits durch etwas aus deiner Sammlung ersetzt wird.', alternatives};
+}
+
+function addRestockForProduct(p){
+  const rec = restockRecommendation(p);
+  if (rec.type === 'none' || rec.type === 'wait') {
+    toast(rec.title);
+    return;
+  }
+  const existing = state.shopping.find(x => x.sourceProductId === p.id && !x.bought);
+  if (!existing) {
+    state.shopping.unshift({
+      id:'restock-'+Date.now(),
+      name:p.name,
+      reason:rec.text,
+      priority:rec.type==='buy'?'hoch':'mittel',
+      tags:p.tags||[],
+      bought:false,
+      sourceProductId:p.id,
+      restockType:rec.type
+    });
+  }
+  save();
+  toast('Nachkauf zur Einkaufsliste hinzugefügt.');
+}
+
+function productPlan(p){
+ const id=p.id;
+ const plans={
+  'arcaya-hyaluron-glow':'Abends, nach der Reinigung · 1 Ampulle aufbrauchen',
+  'arcaya-hyaluron-intensive':'Abends, nach der Reinigung · als Feuchtigkeits-Boost',
+  'arcaya-overnight-repair':'Abends · wenn die Haut trocken/beansprucht wirkt',
+  'arcaya-super-collagen':'Abends · gelegentlich als Pflege-Boost',
+  'arcaya-hyaluron-ace':'Morgens oder abends · gelegentlich',
+  'arcaya-ultra-quick-lift':'Vor einem besonderen Anlass · gelegentlich',
+  'rituals-purify-wipes':'Nur unterwegs/bei Bedarf · nicht als tägliche Pflichtreinigung',
+  'harvest-restful':'Abends · 1×/Woche als Sleeping Mask',
+  'masam-aqua':'Morgens & abends · deine Basiscreme',
+  'nivea-soft':'Bei Bedarf · Alternative zur Basiscreme, nicht zusätzlich stapeln',
+  'gua-sha':'Di/bei Bedarf · Gua-Sha-Ritual, sanfter Druck',
+  'lan-spf50':'Jeden Morgen · letzter Schritt, großzügig',
+  'estee-daywear':'Optional morgens · nur als Pflege/Make-up-Basis; ersetzt SPF 50 nicht',
+  'nivea-eye-remover':'Abends bei Augen-Make-up · vor der Gesichtsreinigung',
+  'rituals-karma-body':'Abends nach dem Duschen · Körperpflege, 1×/Woche oder nach Bedarf',
+  'skin-systeme-eye':'Bei Bedarf morgens/abends · dünn um die Augen',
+  'no-retinol':'PAUSIERT · in Stillzeit/Kinderwunsch/Schwangerschaft nicht aktivieren',
+  'no-hyaluron':'Morgens oder abends · dein Basis-Hyaluronserum',
+  'no-niacinamide':'NICHT VERWENDEN · abgelaufen; ersetzen',
+  'balea-hyaluron':'Rotation · statt anderer Hyaluron-Seren, nicht parallel nötig',
+  'rituals-namaste-micellar':'Abends/bei Make-up · Reinigung; anschließend mit Wasser/zweitem Reiniger nach Bedarf',
+  'marionnaud-hydrate':'Produkt erst eindeutig identifizieren · danach gezielt einordnen',
+  'garnier-pha':'Do/Peelingabend · max. 1×/Woche; nicht mit anderem Peeling kombinieren',
+  'chanel-red-camellia':'Rotation · nach Reinigung, nur wenn an diesem Abend kein Peeling im Einsatz ist',
+  'pc-bha':'Nur bei Poren/Unreinheiten · max. gelegentlich; nicht am PHA/Glycol-Abend',
+  'chanel-hydra':'Rotation · Serum für Feuchtigkeit, statt eines anderen Serums',
+  'sevens-white-collagen':'Sa/Beauty-Ritual · Feuchtigkeitsmaske, gelegentlich',
+  'beauty-eye-energy':'Eye Rescue · nach Bedarf, ca. 5 Min.',
+  'rituals-purify-mask':'Nur bei Bedarf · Maske, nicht als tägliche Reinigung',
+  'bi-care-winter':'Bei Kälte/trockener Haut · eher Hände/Körper bzw. trockene Stellen',
+  'loreal-age-perfect':'Probe · erst Produktvariante/Verträglichkeit prüfen',
+  'dado-purderm-gel':'Probe · nach Etikett verwenden; nicht automatisch in Basisroutine aufnehmen',
+  'dado-purderm-cream':'Probe · gezielt nach Verträglichkeit/Bedarf verwenden',
+  'garnier-hydrabomb':'Rotation · Feuchtigkeitsmaske, gelegentlich',
+  'trend-hand-mask':'Beauty-Ritual · Hände, ca. 1×/Woche nach Bedarf',
+  'garnier-vitc':'Rotation · Feuchtigkeits-/Vitamin-C-Maske, gelegentlich',
+  'garnier-hyaluron-mask':'Rotation · Feuchtigkeitsmaske, gelegentlich',
+  'beauty-manuka':'Rotation · Feuchtigkeitsmaske, gelegentlich',
+  'drgrandel-caps':'Separat von Gesichtspflege · Einnahme nur nach Packungsangaben prüfen',
+  'shiseido-vital':'Probe · als Creme testen, nicht zusätzlich zur Basiscreme nötig',
+  'garnier-retouch':'Make-up/Finish · nach Pflege & SPF, nicht als Hautpflege zählen',
+  'face-mask-aloe':'Probe · Feuchtigkeitsmaske, erst Variante prüfen',
+  'dr-eberhardt':'Probe · Creme, gelegentlich statt Basiscreme',
+  'sofri-amber':'Probe · vermutlich Pflege/Make-up-Basis; erst Etikett prüfen',
+  'pure-vitality':'Probe · Creme, gelegentlich statt Basiscreme',
+  'sensai-antiwrinkle':'Probe · Creme, gelegentlich statt Basiscreme',
+  'locherber-rose':'Probe · Creme, gelegentlich statt Basiscreme',
+  'sofri-coolrose':'Probe · Pflege/Make-up-Basis, erst Etikett prüfen',
+  'heliotrop-eye':'Probe · Augenpflege bei Bedarf',
+  'heliotrop-balance':'Probe · Tagescreme, statt anderer Creme testen',
+  'hyaluron-gurken':'Aufbrauchen · Augenpflege, nach Bedarf',
+  'vandini-brightening':'Probe · Leave-on-Maske; erst Variante/Verträglichkeit prüfen',
+  'bodysoul-orchid':'Körper/Wellness · nicht Teil der Gesichtsroutine',
+  'teint-miracle':'Make-up · nach Pflege & SPF',
+  'gehwol-softening':'Fußpflege · nach Bedarf',
+  'vichy-idealia':'Probe · Serum, gelegentlich statt eines anderen Serums',
+  'schaebens-hyaluron':'Eye Rescue · Augenpads nach Bedarf',
+  'schaebens-cooling':'Eye Rescue · kühlende Augenpads nach Bedarf',
+  'balea-cherry-love-lippenmaske':'Beauty-Ritual · Lippen, nach Bedarf',
+  'lancome-genifique':'Rotation · Serum statt eines anderen Serums',
+  'shiseido-ultimune':'Rotation · Serum statt eines anderen Serums',
+  'nivea-creme':'Nach Bedarf · trockene Stellen/Körper; nicht als Pflicht im Gesicht',
+  'chanel-sublimage-lotion':'Peeling-Rotation · nicht zusammen mit PHA/BHA verwenden'
+ };
+ return plans[id] || 'Manuell prüfen';
+}
+function productCard(p){
+ const rec=restockRecommendation(p);
+ const plan=productPlan(p);
+ const stateText=p.state==='aufbrauchen'?'Aufbrauchen':p.state==='Basis'?'Basisroutine':p.state==='gelegentlich'?'Gelegentlich':p.state==='pausiert'?'Pausiert':p.state==='abgelaufen – ersetzen'?'Abgelaufen · ersetzen':p.state;
+ return `<div class="product" data-product="${esc(p.name.toLowerCase())}">
+  <div class="row"><div><h3>${esc(p.name)}</h3>${(p.tags||[]).map(t=>`<span class="pill">${esc(tagMeta[t]||t)}</span>`).join('')}</div>
+  <div class="row"><button class="secondary small" data-toggle="${p.id}">${p.active?'Deaktivieren':'Aktivieren'}</button><button class="delete" title="Ausmisten" data-delete="${p.id}">🗑️</button></div></div>
+  <p><b>${esc(p.cat)}</b>${p.quantity>1?` · <span class="pill">Menge ${p.quantity}</span>`:''}</p>
+  <p class="${p.state&&p.state.includes('abgelaufen')?'bad':''}"><b>Status:</b> ${esc(stateText||'prüfen')}</p>
+  <p><b>Mein Einsatz:</b> ${esc(plan)}</p>
+  ${p.state==='leer'?`<div class="analysis"><h3>📦 Leer – Nachkaufentscheidung</h3><p><b>${esc(rec.title)}</b></p><p>${esc(rec.text)}</p>${rec.alternatives.length?`<p><b>Vorhandene Alternative:</b> ${rec.alternatives.map(x=>esc(x.name)).join(' · ')}</p>`:''}<button class="primary small" data-restock="${p.id}">Entscheidung zur Einkaufsliste</button></div>`:''}
+ </div>`;
+}
+function renderShopping(){const open=state.shopping.filter(x=>!x.bought);return `<div class="hero"><div><h2>🛍️ Einkaufen</h2><p>Fehlende Produkte bleiben sichtbar, bis sie erledigt sind. Bei leeren Produkten entscheidet My Skin OS zwischen <b>nachkaufen</b>, <b>ersetzen</b> und <b>nicht nachbestücken</b>.</p></div><span class="pill">${open.length} offen</span></div><div class="card"><h2>Für deine aktuelle Routine</h2>${open.length?open.map(x=>`<div class="shopping"><div><h3>${esc(x.name)}</h3><p>${esc(x.reason)}</p><span class="pill">Priorität: ${esc(x.priority)}</span> ${x.restockType==='alternative'?'<span class="pill">Alternative prüfen</span>':''}</div><button class="secondary small" data-bought="${x.id}">✓ Erledigt</button></div>`).join(''):'<div class="empty">✨ Aktuell fehlt nichts Wesentliches.</div>'}</div><div class="card"><h2>📝 Eigenen Einkauf ergänzen</h2><div class="row"><input id="shopInput" placeholder="z. B. mineralischer SPF 50"><button class="primary" id="shopAdd">＋ Hinzufügen</button></div></div><div class="card"><h2>💡 Wichtig</h2><p>„Gekauft“ macht ein Produkt noch nicht zu einem vorhandenen Produkt. Erst beim Scanner hinzufügen, dann kann es in die Routine einfließen.</p></div>`}
+
+function planInfo(p){
+  const t=p.tags||[], c=p.cat||'';
+  if(t.includes('retinoid')) return {group:'Später',freq:'erst nach passender Lebensphase',why:'Langfristiger Wirkstoff für Hautstruktur und Falten; aktuell bewusst nicht in die aktive Routine ziehen.',priority:4};
+  if(t.includes('spf50')) return {group:'Dauerhaft',freq:'täglich morgens',why:'Nicht rotieren – UV-Schutz ist der wichtigste Langzeitbaustein.',priority:1};
+  if(t.includes('niacinamide')) return {group:'Dauerhaft',freq:'morgens oder abends',why:'Basiswirkstoff; nur ein Niacinamid-Serum gleichzeitig nötig.',priority:1};
+  if(t.includes('cleansing')) return {group:'Dauerhaft',freq:'abends / bei Bedarf morgens',why:'Eine Reinigung reicht; vorhandene Produkte nacheinander aufbrauchen.',priority:1};
+  if(t.includes('aha')||t.includes('pha')||t.includes('bha')||t.includes('exfoliation')) return {group:'Rotation',freq:'max. 1 Peelingabend/Woche',why:'Nicht stapeln. AHA/PHA und BHA werden getrennt eingesetzt und nur bei Bedarf.',priority:2};
+  if(t.includes('mask')) return {group:'Rotation',freq:'1–2×/Monat nach Bedarf',why:'Alle vorhandenen Masken werden nacheinander aufgebraucht; keine Vorratskäufe.',priority:3};
+  if(c==='Ampulle') return {group:'Rotation',freq:'1 Ampulle als Intensivabend, dann Pause',why:'Die sechs unterschiedlichen Ampullen werden einzeln verplant, statt parallel verwendet.',priority:2};
+  if(c==='Augenpads') return {group:'Rotation',freq:'bei Bedarf / vor Terminen',why:'Optionaler Zusatz; vorhandene Packungen zuerst aufbrauchen.',priority:4};
+  if(c==='Augenpflege') return {group:'Rotation',freq:'abends oder morgens',why:'Nur eine Augenpflege zur Zeit; Alternativen werden erst nach Aufbrauch gewechselt.',priority:3};
+  if(t.includes('hyaluronic_acid')||t.includes('hydration')||t.includes('barrier')||t.includes('peptides')) return {group:'Rotation',freq:'morgens/abends nach Bedarf',why:'Feuchtigkeit/Barriereschritt. Ähnliche Produkte werden bewusst nacheinander statt übereinander eingesetzt.',priority:2};
+  if(c==='Körperpflege'||c==='Handpflege'||c==='Fußpflege') return {group:'Nebenroutine',freq:'nach Bedarf',why:'Eigene Kategorie – nicht mit der Gesichtsroutine vermischen.',priority:5};
+  if(c==='Make-up'||c==='Finish/Make-up') return {group:'Make-up',freq:'bei Bedarf',why:'Nicht Teil der Wirkstoffroutine.',priority:5};
+  if(c==='Tool') return {group:'Wellness',freq:'optional',why:'Ergänzung, kein Pflichtschritt.',priority:5};
+  return {group:'Rotation',freq:'nach Bedarf',why:'Zuerst vorhandenes Produkt sinnvoll aufbrauchen.',priority:4};
+}
+function monthName(d){return d.toLocaleDateString('de-DE',{month:'long',year:'numeric'}).replace(/^./,m=>m.toUpperCase())}
+function futureMonths(n=12){
+  const now=new Date(), out=[];
+  for(let i=0;i<n;i++) out.push(new Date(now.getFullYear(),now.getMonth()+i,1));
+  return out;
+}
+function productsForMonth(monthIndex){
+  const all=state.products.filter(p=>p.owned!==false && p.state!=='abgelaufen');
+  const rotation=all.filter(p=>planInfo(p).group==='Rotation');
+  const masks=rotation.filter(p=>(p.tags||[]).includes('mask'));
+  const amp=all.filter(p=>p.cat==='Ampulle');
+  const exfol=all.filter(p=>(p.tags||[]).some(t=>['aha','pha','bha','exfoliation'].includes(t)));
+  const samples=all.filter(p=>/Probe|probe/.test(p.state||'')||p.cat==='Probe');
+  const result=[];
+  if(monthIndex<3) {
+    result.push(...amp.slice(monthIndex*2,monthIndex*2+2));
+    result.push(...masks.slice(monthIndex,monthIndex+1));
+  } else if(monthIndex<6) {
+    result.push(...amp.slice(0,2).filter((_,i)=>i===monthIndex%2));
+    result.push(...masks.slice(monthIndex%Math.max(1,masks.length),monthIndex%Math.max(1,masks.length)+1));
+    result.push(...samples.slice((monthIndex-3)*2,(monthIndex-3)*2+2));
+  } else {
+    result.push(...masks.slice(monthIndex%Math.max(1,masks.length),monthIndex%Math.max(1,masks.length)+1));
+    result.push(...samples.slice((monthIndex-6)*2,(monthIndex-6)*2+2));
+    if(exfol[0]) result.push(exfol[monthIndex%exfol.length]);
+  }
+  return [...new Map(result.map(p=>[p.id,p])).values()].slice(0,5);
+}
+function renderLongPlan(){
+  const all=state.products.filter(p=>p.owned!==false);
+  const active=all.filter(p=>p.active!==false && p.state!=='abgelaufen');
+  const groups={};
+  active.forEach(p=>{const g=planInfo(p).group;(groups[g]??=[]).push(p)});
+  const months=futureMonths(12);
+  const core=active.filter(p=>['Dauerhaft','Nebenroutine'].includes(planInfo(p).group));
+  const delayed=all.filter(p=>planInfo(p).group==='Später');
+  const rotation=active.filter(p=>planInfo(p).group==='Rotation');
+  return `<div class="hero"><div><h2>🗓️ Dein Langzeitplan</h2><p>Die App plant nicht „alles jeden Tag“, sondern <b>jedes Produkt in seinen sinnvollen Platz</b> – mit Rotation, Aufbrauchlogik und späteren Lebensphasen.</p></div><span class="pill">${active.length} aktive Produkte</span></div>
+  <div class="notice">🎯 <b>Grundregel:</b> Kernprodukte laufen dauerhaft. Ähnliche Seren und Cremes werden nacheinander verwendet. Masken, Ampullen und Peelings rotieren. Produkte, die aktuell nicht passen, bleiben im Katalog und werden für später vorgemerkt. So kannst du deine Sammlung über Monate nutzen, ohne eine überladene Routine zu bauen.</div>
+  <div class="card"><h2>♻️ Was dauerhaft bleibt</h2>${core.map(p=>{const i=planInfo(p);return `<div class="road"><b>${esc(p.name)}</b><p>${esc(i.freq)}</p><span class="pill">${esc(i.group)}</span><p class="muted">${esc(i.why)}</p></div>`}).join('')||'<p>Keine Produkte in dieser Gruppe.</p>'}</div>
+  <div class="card"><h2>🔄 Deine Produkt-Rotation</h2>${rotation.map(p=>{const i=planInfo(p);return `<div class="shopping"><div><b>${esc(p.name)}</b><small class="muted" style="display:block">${esc(i.freq)} · ${esc(i.why)}</small></div><span class="pill">${esc(i.group)}</span></div>`}).join('')||'<p>Keine Rotationsprodukte.</p>'}</div>
+  <div class="card"><h2>📅 Die nächsten 12 Monate</h2>${months.map((m,idx)=>{const ps=productsForMonth(idx);return `<div class="monthPlan"><div class="row"><h3>${monthName(m)}</h3><span class="pill">Fokus ${idx<3?'Aufbrauchen & Basis':idx<6?'Rotation & Proben':'Rotation & gezielte Extras'}</span></div><p class="muted">Diese Produkte bekommen in diesem Monat einen bewussten Platz. Die tägliche Basis bleibt davon getrennt.</p>${ps.length?ps.map(p=>`<div class="shopping"><div>🔹 <b>${esc(p.name)}</b><small class="muted" style="display:block">${esc(planInfo(p).freq)}</small></div></div>`).join(''):'<p>✨ Kein Zusatzprodukt nötig – Basisroutine reicht.</p>'}</div>`}).join('')}</div>
+  <div class="card"><h2>⏳ Für später reserviert</h2>${delayed.map(p=>`<div class="road"><b>${esc(p.name)}</b><p>${esc(planInfo(p).why)}</p><span class="pill">nicht jetzt · später prüfen</span></div>`).join('')||'<p>Aktuell ist kein Produkt bewusst für später reserviert.</p>'}</div>
+  <div class="notice">🛍️ <b>Einkaufsregel:</b> Wenn ein Produkt leer wird, entscheidet die App zuerst, ob eine vorhandene Alternative reicht. Erst wenn eine Funktion wirklich fehlt, wird ein Nachkauf vorgeschlagen. Dadurch soll dein Bestand mit der Zeit kleiner und sinnvoller werden – nicht größer.</div>`;
+}
+
+function renderRoadmap(){const roadmap=[['34–35 · 2026/27','Basis','Stillzeit: Feuchtigkeit, Niacinamid, SPF 50; sanftes Peeling höchstens 1×/Woche.'],['35–37','Kinderwunsch / Schwangerschaft / Stillzeit','Routine stabil halten; Retinoide pausieren.'],['37–38+','Nach letzter Stillzeit','Wenn keine Schwangerschaft geplant ist: Retinoid langsam aufbauen.'],['38–40','Hautqualität','Bei Bedarf Peelings, Microneedling oder Laser mit qualifizierter Fachperson besprechen.'],['40–42','Erhaltung','SPF + Retinoid als Fundament; Treatments nur mit konkretem Ziel.'],['42–45+','Individuell','Konservatives Botulinumtoxin bei mimischen Falten optional; Filler nur bei echtem Volumenverlust.']];return `<div class="card"><h2>Dein Lebensplan</h2><p>Geboren <b>November 1991</b> · 35 im November 2026.</p>${roadmap.map(x=>`<div class="road"><b>${x[0]}</b><h3>${x[1]}</h3><p>${x[2]}</p></div>`).join('')}</div>`}
+function renderTreatments(){return `<div class="card"><h2>Beauty-Treatments ✨</h2>${[['Professionelle Peelings','Textur, Pigment, Glow','später / individuell'],['Microneedling','Hautstruktur und feine Linien','später / individuell'],['Fraktionierter Laser','stärkerer Ansatz für Textur/feine Linien','später / fachärztlich'],['Botulinumtoxin','Mimische Stirn-/Zornesfalten','optional nach Kinderwunsch & Stillzeit'],['Filler','Volumenverlust / konkrete Vertiefungen','nicht prophylaktisch']].map(t=>`<div class="treat"><h3>${t[0]}</h3><p>${t[1]}</p><span class="pill">${t[2]}</span></div>`).join('')}</div><div class="card"><h3>Natürlichkeits-Regel</h3><p>Konservativ starten, ein Ziel nach dem anderen behandeln, ausreichend Abstand lassen und natürliche Mimik erhalten.</p></div><div class="notice">Bei Schwangerschaft/Stillzeit kosmetische Eingriffe nicht einfach aus der App ableiten; mit der behandelnden Fachperson klären.</div>`}
+function renderRituals(){const rituals=[
+['💆‍♀️','Gua Sha Glow','5–8 Min. · 2–3×/Woche','Kiefer, Wangen, Hals & Stirn sanft massieren. Fokus: Entspannung und ein frisches Hautgefühl.'],
+['💧','Hydration Reset','10 Min. · 1×/Woche','Feuchtigkeitsmaske gezielt einsetzen und danach Hyaluron + Creme.'],
+['👀','5-Minute Eye Rescue','5 Min. · nach Bedarf','Hydrogel-Augenpads, danach bei Bedarf SOS Eye Cream.'],
+['🤍','Skin Barrier Night','5 Min. · 1×/Woche','Ein bewusster Ruheabend ohne Peeling: Reinigung → Hyaluron → Creme.'],
+['💋','Lip & Hand Ritual','5 Min. · 2–3×/Woche','Lippenmaske und Handpflege als kleine Abendpause.'],
+['🧴','Body Glow','10 Min. · 1×/Woche','Körperpflege nach dem Duschen auf leicht feuchter Haut.'],
+['🌙','Sunday Beauty Reset','15 Min. · 1×/Woche','Feuchtigkeitsmaske, optional Augenpads, anschließend Basisroutine sowie Lippen-/Handpflege.']
+];return `<div class="hero"><div><h2>Beauty Rituale ✨</h2><p class="muted">Kleine, wirksame Extras – bewusst dosiert und realistisch mit Baby.</p></div><span class="pill">👶 Baby-tauglich</span></div><div class="ritual-grid">${rituals.map((r,i)=>`<div class="ritual-card"><span class="ritual-label">${i===0?'Massage':i===2?'Quick Fix':'Beauty'}</span><h3>${r[0]} ${r[1]}</h3><p>${r[3]}</p><div class="ritual-meta"><span class="pill">${r[2]}</span></div></div>`).join('')}</div><div class="card"><h2>💆‍♀️ Gua Sha – 6 Schritte</h2><p class="muted">Sanfter Druck, niemals über gereizte oder verletzte Haut.</p>${[['1','Vorbereiten','Reinigen und für ausreichend Gleitfähigkeit sorgen.'],['2','Hals & Schlüsselbein','Sanft von der Mitte nach außen bzw. entlang der Halsseiten streichen.'],['3','Kieferlinie','Vom Kinn Richtung Ohr gleiten.'],['4','Wangen','Von der Gesichtsmitte nach außen Richtung Schläfe.'],['5','Augenbrauen & Stirn','Über der Braue nach außen, danach Stirnmitte nach außen.'],['6','Abschluss','Noch einmal leicht über Wangen und Hals ausstreichen.']].map(x=>`<div class="ritual-check"><span><b>${x[0]}.</b> ${x[1]} – ${x[2]}</span></div>`).join('')}</div><div class="notice">🤍 Nicht alles muss stattfinden: Die Beauty Rituale sind Ergänzungen zur Basisroutine. Wenn der Baby-Tag voll ist, reicht die normale Pflege vollkommen.</div>`}
+function renderSettings(){return `<div class="card"><h2>💾 Daten</h2><p class="muted">Alles bleibt lokal im Browser. Exportiere regelmäßig ein Backup.</p><div class="row"><button class="primary" id="export">⬇️ Backup exportieren</button><label class="secondary import">⬆️ Backup importieren<input id="import" type="file" accept="application/json"></label></div></div><div class="card"><h2>🔒 Sicherheitsprinzip</h2><p>Die Produktanalyse ist eine konservative Heuristik, keine medizinische Diagnose. Bei unvollständiger INCI wird nicht behauptet, ein Produkt sei sicher.</p></div>`}
+function render(){nav();const app=document.getElementById('app');app.innerHTML=state.tab==='today'?renderToday():state.tab==='week'?renderWeek():state.tab==='products'?renderProducts():state.tab==='rituals'?renderRituals():state.tab==='shopping'?renderShopping():state.tab==='longplan'?renderLongPlan():state.tab==='roadmap'?renderRoadmap():state.tab==='treatments'?renderTreatments():renderSettings();bind()}
+function bind(){
+document.querySelectorAll('[data-ritual]').forEach(e=>e.onclick=()=>{state.ritualActive=e.dataset.ritual;save();render();});
+const todayRitual=document.getElementById('todayRitual');
+if(todayRitual){
+  const dow=new Date().getDay();
+  const map={
+    0:['🌙','Sunday Beauty Reset','15 Min. · Wochenabschluss','Reinigung → Feuchtigkeitsmaske → Hyaluron → Creme; optional Augenpads sowie Lippen-/Handpflege.'],
+    1:['','', '', ''],
+    2:['💆‍♀️','Gua Sha Glow','5–8 Min. · 2–3×/Woche','Sanfte Massage für Kiefer, Wangen, Hals und Stirn.'],
+    3:['','', '', ''],
+    4:['','', '', ''],
+    5:['👀','5-Minute Eye Rescue','5 Min. · optional','Hydrogel-Augenpads und danach bei Bedarf SOS Eye Cream.'],
+    6:['💧','Hydration Reset','10 Min. · Wochenpflege','Feuchtigkeitsmaske passend zum Hautgefühl, danach Hyaluron + Creme.']
+  };
+  const r=map[dow];
+  todayRitual.innerHTML=r[1]?`<div class="today-ritual"><b>${r[0]} ${r[1]}</b><small>${r[2]}</small><small>${r[3]}</small></div>`:`<div class="today-ritual"><b>🤍 Heute ist ein Erholungstag.</b><small>Deine normale Routine reicht vollkommen.</small></div>`;
+}
+
+const ritualStepKey=(id)=>'my-skin-ritual-'+new Date().toISOString().slice(0,10)+'-'+id;
+document.querySelectorAll('[data-ritual-step]').forEach(e=>{e.checked=localStorage.getItem(ritualStepKey(e.dataset.ritualStep))==='1';e.onchange=()=>{if(e.checked)localStorage.setItem(ritualStepKey(e.dataset.ritualStep),'1');else localStorage.removeItem(ritualStepKey(e.dataset.ritualStep));};});
+const phase=document.getElementById('phase');if(phase)phase.onchange=()=>{state.phase=phase.value;save();render()};
+document.querySelectorAll('[data-check]').forEach(e=>e.onchange=()=>{
+  state.checks[e.dataset.check]=e.checked?'done':'open'; save(); render();
+});
+document.querySelectorAll('[data-go]').forEach(e=>e.onclick=()=>{state.tab=e.dataset.go;save();render()});
+const resetDay=document.getElementById('resetDay');if(resetDay)resetDay.onclick=()=>{if(confirm('Tages-Checkliste wirklich zurücksetzen?')){Object.keys(state.checks).forEach(k=>delete state.checks[k]);save();render();toast('Tages-Checkliste zurückgesetzt.')}};
+const ja=document.getElementById('journalAdd');if(ja)ja.onclick=()=>{const note=prompt('Kurze Notiz zu deiner Haut heute (optional):','')||'';state.journal=[{date:new Date().toISOString().slice(0,10),note},...state.journal.filter(x=>x.date!==new Date().toISOString().slice(0,10))];save();render();toast('Haut-Tagebuch aktualisiert.')};
+document.querySelectorAll('[data-delete]').forEach(e=>e.onclick=()=>{const p=state.products.find(x=>x.id===e.dataset.delete);if(p&&confirm('„'+p.name+'“ wirklich aus deiner Sammlung ausmisten?')){state.products=state.products.filter(x=>x.id!==p.id);save();render();toast('Produkt ausgemistet.') }});
+document.querySelectorAll('[data-toggle]').forEach(e=>e.onclick=()=>{state.products=state.products.map(p=>p.id===e.dataset.toggle?{...p,active:!p.active}:p);save();render()});
+
+document.querySelectorAll('[data-empty]').forEach(e=>e.onclick=()=>{
+  const p=state.products.find(x=>x.id===e.dataset.empty);
+  if(p){
+    p.state='leer'; p.owned=true; p.active=false;
+    save(); render(); toast('Produkt als leer markiert.');
+  }
+});
+document.querySelectorAll('[data-restock]').forEach(e=>e.onclick=()=>{
+  const p=state.products.find(x=>x.id===e.dataset.restock);
+  if(p){ addRestockForProduct(p); render(); }
+});
+document.querySelectorAll('[data-no-restock]').forEach(e=>e.onclick=()=>{
+  const p=state.products.find(x=>x.id===e.dataset.noRestock);
+  if(p){ p.state='leer – nicht nachbestücken'; p.owned=false; p.active=false; save(); render(); toast('Kein Nachkauf vorgemerkt.'); }
+});
+document.querySelectorAll('[data-buy]').forEach(e=>e.onclick=()=>{const p=state.products.find(x=>x.id===e.dataset.buy);if(p){state.shopping=[{id:'shop-'+Date.now(),name:p.name.replace(/\s*\\(Neu kaufen\\)/i,''),reason:'Für deine Routine vorgemerkt.',priority:'hoch',tags:p.tags||[],bought:false},...state.shopping];save();toast('Auf Einkaufsliste gesetzt.')}});
+document.querySelectorAll('[data-bought]').forEach(e=>e.onclick=()=>{state.shopping=state.shopping.map(x=>x.id===e.dataset.bought?{...x,bought:true}:x);save();render()});
+const si=document.getElementById('shopAdd');if(si)si.onclick=()=>{const inp=document.getElementById('shopInput'),v=inp.value.trim();if(!v)return;state.shopping=[{id:'shop-'+Date.now(),name:v,reason:'Von dir vorgemerkt.',priority:'mittel',tags:[],bought:false},...state.shopping];save();inp.value='';render();toast('Zur Einkaufsliste hinzugefügt.')};
+
+document.querySelectorAll('[data-swipe]').forEach(row=>{
+  let sx=0, sy=0, active=false;
+  row.addEventListener('touchstart',ev=>{
+    if(!ev.touches[0]) return;
+    sx=ev.touches[0].clientX; sy=ev.touches[0].clientY; active=true;
+    row.classList.add('swiping');
+  },{passive:true});
+  row.addEventListener('touchmove',ev=>{
+    if(!active||!ev.touches[0]) return;
+    const dx=ev.touches[0].clientX-sx, dy=ev.touches[0].clientY-sy;
+    if(Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>8){
+      row.style.transform=`translateX(${Math.max(-95,Math.min(95,dx))}px)`;
+      row.style.opacity=String(Math.max(.65,1-Math.abs(dx)/260));
+      const pct=Math.min(100,Math.round(Math.abs(dx)/95*100));
+      row.style.setProperty('--swipe-progress', pct+'%');
+      if(dx<0){
+        row.style.setProperty('--left-width', pct+'%');
+        row.style.setProperty('--right-width','0%');
+      }else{
+        row.style.setProperty('--right-width', pct+'%');
+        row.style.setProperty('--left-width','0%');
+      }
+    }
+  },{passive:true});
+  row.addEventListener('touchend',()=>{
+    if(!active) return;
+    const dx=parseFloat((row.style.transform||'translateX(0px)').match(/-?\d+/)?.[0]||0);
+    active=false; row.classList.remove('swiping'); row.style.transform=''; row.style.opacity=''; row.style.setProperty('--left-width','0%'); row.style.setProperty('--right-width','0%');
+    if(Math.abs(dx)>=60){
+      const key=row.dataset.swipe;
+      state.checks[key]=dx>0?'done':'skipped';
+      save(); render();
+      toast(dx>0?'✓ Schritt erledigt':'↩ Schritt für heute übersprungen');
+    }
+  });
+});
+
+const filter=document.getElementById('filter');if(filter)filter.oninput=()=>{const q=filter.value.toLowerCase();document.querySelectorAll('[data-product]').forEach(e=>e.style.display=e.dataset.product.includes(q)?'':'none')};
+const analyzeBtn=document.getElementById('analyze');if(analyzeBtn)analyzeBtn.onclick=()=>{const n=document.getElementById('pname').value.trim(),i=document.getElementById('inci').value.trim();if(!n){toast('Bitte zuerst einen Produktnamen eingeben.');return}showAnalysis(n,i)};
+const photo=document.getElementById('photo');if(photo)photo.onchange=()=>{const f=photo.files[0];if(!f)return;const area=document.getElementById('photoArea');area.innerHTML=`<div class="photoBox"><img src="${URL.createObjectURL(f)}" alt="Etikett"><div><b>${esc(f.name)}</b><br><button class="secondary small" id="ocrBtn">📖 Foto auslesen</button></div></div>`;document.getElementById('ocrBtn').onclick=()=>ocr(f)};
+const ex=document.getElementById('export');if(ex)ex.onclick=()=>{const b=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='my-skin-os-backup.json';a.click()};
+const im=document.getElementById('import');if(im)im.onchange=()=>{const f=im.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);save();render();toast('Backup importiert.')}catch{toast('Backup konnte nicht gelesen werden.')}};r.readAsText(f)};
+}
+function showAnalysis(n,i){const a=analyze(n,i);document.getElementById('analysis').innerHTML=`<div class="analysis"><h3>${a.blocked?'⚠️ Pausieren empfohlen':'✨ '+esc(a.slot)}</h3><p><b>Kategorie:</b> ${esc(a.cat)}</p><p><b>Erkannt:</b> ${a.tags.map(t=>`<span class="pill">${esc(tagMeta[t]||t)}</span>`).join('')||'noch nichts Eindeutiges'}</p><p>${esc(a.reason)}</p>${a.conflicts.map(c=>`<p class="warning">⚠️ ${esc(c)}</p>`).join('')}<div class="row"><button class="primary" id="acceptProduct">Übernehmen</button><button class="secondary" id="discardAnalysis">Verwerfen</button></div></div>`;document.getElementById('acceptProduct').onclick=()=>{state.products.unshift({id:'p-'+Date.now(),name:n,inci:i,cat:a.cat,tags:a.tags,state:a.blocked?'pausiert – Lebensphase':'neu · vorgeschlagen',active:!a.blocked,owned:true,needed:false,source:'Scanner'});save();render();toast('Produkt gespeichert.')};document.getElementById('discardAnalysis').onclick=()=>document.getElementById('analysis').innerHTML=''}
+async function ocr(file){const area=document.getElementById('photoArea');area.innerHTML+='<p class="muted" id="ocrStatus">📖 OCR wird geladen…</p>';try{if(!window.Tesseract){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}const r=await Tesseract.recognize(file,'eng',{logger:m=>{const el=document.getElementById('ocrStatus');if(el&&m.status)el.textContent='📖 '+m.status+' '+(m.progress?Math.round(m.progress*100)+'%':'')}});const text=r.data.text||'';document.getElementById('inci').value=text;const lines=text.split(/\\n+/).map(x=>x.trim()).filter(Boolean);if(lines[0])document.getElementById('pname').value=lines[0].slice(0,100);const el=document.getElementById('ocrStatus');if(el)el.textContent='✅ Text erkannt – bitte prüfen und dann analysieren.'}catch(e){const el=document.getElementById('ocrStatus');if(el)el.textContent='⚠️ OCR konnte nicht geladen werden. Bitte Name/INCI manuell eintragen.'}}
+render();
+</script>
+</body>
+</html>
