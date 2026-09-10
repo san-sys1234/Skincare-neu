@@ -239,7 +239,7 @@ const photoAudit=["arçaya Hyaluron Glow","arçaya Hyaluron Intensive","arçaya 
 const phases={breastfeeding:['🍼 Stillzeit','Basis: Feuchtigkeit, Niacinamid und täglicher SPF. Retinoide pausieren.'],ttc:['🥰 Kinderwunsch','Routine stabil halten; Retinoide nicht aktivieren.'],pregnancy:['🤰 Schwangerschaft','Sanfte Basics + SPF; Retinoide vermeiden.'],post:['✨ Nach Stillzeit','Wenn keine Schwangerschaft geplant ist: Retinoid langsam und kontrolliert aufbauen.']};
 const tagMeta={retinoid:'Retinoid',niacinamide:'Niacinamid',vitamin_c:'Vitamin C',hyaluronic_acid:'Hyaluron',aha:'AHA',pha:'PHA',bha:'BHA',ceramides:'Ceramide',peptides:'Peptide',spf50:'SPF 50+',cleansing:'Reinigung',mask:'Maske',exfoliation:'Peeling',hydration:'Feuchtigkeit',barrier:'Barriereschutz',repair:'Repair'};
 const shoppingDefaults=[
-{id:'shop-cleanser',name:'Sanfter Gesichtsreiniger',reason:'Für eine zuverlässige, hautschonende Reinigung morgens/abends.',priority:'mittel',tags:['cleansing'],bought:false},
+{id:'shop-cleanser',name:'CeraVe Schäumendes Reinigungsgel',reason:'Meine feste Empfehlung für die tägliche Reinigung morgens und abends. Dieses Produkt fehlt aktuell und soll gekauft werden.',priority:'hoch',tags:['cleansing'],bought:false,recommendedProduct:true},
  {id:'shop-cream',name:'La Roche-Posay Toleriane Dermallergo Creme',reason:'Ersatz für die alte M. Asam Creme – klare Top-Empfehlung für deine Basisroutine.',priority:'hoch',tags:['hydration','barrier'],bought:false,sourceProductId:'masam-aqua',recommendedProduct:true}
 ];
 const rules=[
@@ -257,7 +257,7 @@ function load(){
         phase:phases[x.phase]?x.phase:'breastfeeding',
         products,
         checks:(x.checks && typeof x.checks==='object')?x.checks:{},
-        shopping:Array.isArray(x.shopping)?x.shopping.filter(i=>i.id!=='shop-niacinamide'):shoppingDefaults.map(x=>({...x})),
+        shopping:(()=>{const saved=Array.isArray(x.shopping)?x.shopping.filter(i=>i.id!=='shop-niacinamide'):[]; const has=saved.some(i=>i.id==='shop-cleanser'||/sanfter gesichtsreiniger|cerave.*reinigungslotion|cerave.*reinigungsgel/i.test(i.name||'')); if(!has) saved.unshift({...shoppingDefaults.find(i=>i.id==='shop-cleanser')}); return saved;})(),
         journal:Array.isArray(x.journal)?x.journal:[],
         ritualActive:x.ritualActive||'gua'
       };
@@ -292,7 +292,7 @@ function routine(){
   const d=new Date(), dow=d.getDay(), week=isoWeekNumber(d);
   const am=[];
   const pm=[];
-  const cleanser=available('cleansing'), spf=available('spf50');
+  const cleanserBought=state.shopping.some(i=>/CeraVe Schäumendes Reinigungsgel/i.test(i.name||'')&&i.bought); const cleanser=cleanserBought; const spf=available('spf50');
   const n1=firstAvailable(['chanel-red-camellia']);
   const cream=firstAvailable(['nivea-soft','dado-purderm-cream','shiseido-vital','dr-eberhardt','pure-vitality','sensai-antiwrinkle','locherber-rose','heliotrop-balance']);
   const mondaySerum=(week%6===0)?['vichy-idealia','no-hyaluron']:['no-hyaluron','balea-hyaluron'];
@@ -312,7 +312,7 @@ function routine(){
   am.push([cream?`Creme · ${cream.name}`:'Creme · La Roche-Posay Toleriane Dermallergo Creme',!!cream,'am3']);
   am.push(['Lancaster SPF 50',spf,'am4']);
 
-  pm.push(['Reinigen',cleanser,'pm0']);
+  pm.push([`Reinigen · CeraVe Schäumendes Reinigungsgel`,cleanser,'pm0']);
   if(dow===4){
     const peel=(week%2===0)?firstAvailable(['garnier-pha']):firstAvailable(['chanel-sublimage-lotion']);
     const peelName=peel?peel.name:(week%2===0?'Garnier PHA + Glycolsäure':'CHANEL Sublimage Lotion Lumière Exfoliante');
@@ -347,12 +347,12 @@ function routine(){
 function weeklyPrepList(){
   const d=new Date(), week=isoWeekNumber(d), dow=d.getDay();
   const cream=firstAvailable(['nivea-soft','dado-purderm-cream','shiseido-vital','dr-eberhardt','pure-vitality','sensai-antiwrinkle','locherber-rose','heliotrop-balance']);
-  const cleanser=firstAvailable(['rituals-namaste-micellar','rituals-cleansing-wipes','nivea-eye-remover','dado-purderm-gel']);
+  const cleanserBought=state.shopping.some(i=>/CeraVe Schäumendes Reinigungsgel/i.test(i.name||'')&&i.bought); const cleanser=cleanserBought?{id:'shop-cleanser',name:'CeraVe Schäumendes Reinigungsgel'}:null;
   const spf=firstAvailable(['lancaster-spf50']);
   const n1=firstAvailable(['chanel-red-camellia']);
   const items=[];
   const add=(p,day,reason,required=true)=>{ if(p) items.push({id:p.id,name:p.name,day,reason,required:true}); else if(required) items.push({id:'missing-'+day+'-'+reason,name:reason,day,reason:'Noch nicht vorhanden',required:false}); };
-  add(cleanser,'Täglich','Reinigung morgens/abends');
+  add(cleanser,'Täglich','Fester täglicher Gesichtsreiniger morgens/abends');
   add(cream,'Täglich','Basiscreme morgens/abends');
   add(spf,'Täglich','SPF 50 morgens');
   if(n1) add(n1,'Mo · Mi · Fr','CHANEL N°1 Lotion morgens');
@@ -391,7 +391,7 @@ function missingDecision(label){
   const n=(label||'').toLowerCase();
   if(n.includes('creme')) return {kind:'buy',text:'⚠️ FEHLT · BITTE KAUFEN: La Roche-Posay Toleriane Dermallergo Creme'};
   if(n.includes('lancaster spf') || n.includes('spf 50')) return {kind:'buy',text:'⚠️ FEHLT · BITTE KAUFEN: La Roche-Posay Anthelios UVMune 400 Invisible Fluid LSF 50+'};
-  if(n.includes('reinigen')) return {kind:'buy',text:'⚠️ FEHLT · BITTE KAUFEN: CeraVe Hydrating Cleanser / Reinigungslotion'};
+  if(n.includes('reinigen')) return {kind:'buy',text:'⚠️ FEHLT · BITTE KAUFEN: CeraVe Schäumendes Reinigungsgel'};
   if(n.includes('peeling-abend')) return {kind:'none',text:'⚪ NICHT KAUFEN · Kein neues Peeling nötig. Die App nutzt vorhandene Peelings in Rotation.'};
   if(n.includes('gua sha glow')) return {kind:'none',text:'⚪ KEIN KAUF NÖTIG · Das Ritual kann ohne die Kapsel entfallen; Gua Sha ist ein optionales Extra.'};
   if(n.includes('eye rescue')) return {kind:'none',text:'⚪ KEIN KAUF NÖTIG · Augenpads sind ein optionales Extra; vorhandene Pads werden aufgebraucht.'};
@@ -445,13 +445,13 @@ function genericTop3(p){
     {name:'Kein Neukauf, falls Niacinamid bereits über ein anderes Produkt abgedeckt ist',why:'Doppelte Wirkstoffprodukte bringen dir keinen klaren Zusatznutzen.',url:'',emoji:'🤍'}
   ];
   if(t.includes('cleansing')) return [
-    {name:'CeraVe Hydrating Cleanser / Reinigungslotion',why:'Sanfte Basisreinigung ohne unnötige Wirkstoffschichtung.',url:'https://www.cerave.de/hautpflege/gesichtspflege',emoji:'🫧'},
-    {name:'La Roche-Posay Toleriane Reinigung',why:'Sinnvolle Alternative für eine möglichst reizarm gehaltene Routine.',url:'https://www.larocheposay.de/toleriane',emoji:'🫧'},
+    {name:'CeraVe Schäumendes Reinigungsgel',why:'Sanfte Basisreinigung ohne unnötige Wirkstoffschichtung.',url:'https://www.cerave.de/hautpflege/reinigung-fuer-gesicht-und-koerper/schaeumendes-reinigungsgel',emoji:'🫧'},
+    {name:'La Roche-Posay Cicaplast Lavant B5 Reinigungsgel',why:'Sinnvolle Alternative für eine möglichst reizarm gehaltene Routine.',url:'https://www.larocheposay.de/cicaplast/cicaplast-lavant-b5',emoji:'🫧'},
     {name:'Vorhandene Reinigung aufbrauchen',why:'Erst vorhandene passende Reinigung verwenden, bevor etwas Neues dazukommt.',url:'',emoji:'♻️'}
   ];
   if(t.includes('hyaluronic_acid')||t.includes('hydration')||t.includes('barrier')||c==='Creme') return [
-    {name:'La Roche-Posay Toleriane Dermallergo Creme',why:'Top-Empfehlung: einfache, beruhigende Basiscreme für morgens und abends.',url:'https://www.larocheposay.de/toleriane/toleriane-dermallergo-creme',emoji:'✨'},
-    {name:'CeraVe Feuchtigkeitsspendende Gesichtscreme',why:'Leichte Gesichtscreme mit Ceramiden, Hyaluron und Niacinamid.',url:'https://www.cerave.de/hautpflege/gesichtspflege/feuchtigkeitsspendende-gesichtscreme',emoji:'💧'},
+    {name:'La Roche-Posay Toleriane Dermallergo Creme',why:'Top-Empfehlung: einfache, beruhigende Basiscreme für morgens und abends.',url:'https://www.larocheposay.de/cicaplast/cicaplast-lavant-b5/toleriane-dermallergo-creme',emoji:'✨'},
+    {name:'CeraVe Feuchtigkeitsspendende Gesichtscreme',why:'Leichte Gesichtscreme mit Ceramiden, Hyaluron und Niacinamid.',url:'https://www.cerave.de/hautpflege/reinigung-fuer-gesicht-und-koerper/schaeumendes-reinigungsgel/feuchtigkeitsspendende-gesichtscreme',emoji:'💧'},
     {name:'Eucerin UltraSensitive Beruhigende Pflege',why:'Minimalistische Option für empfindliche, trockene Haut.',url:'https://www.eucerin.at/produkte/sehr-empfindliche-haut/ultrasensitive-beruhigende-pflege-fuer-trockene-haut',emoji:'🤍'}
   ];
   if(t.some(x=>['aha','pha','bha','exfoliation'].includes(x))) return [
@@ -467,14 +467,14 @@ function restockRecommendation(p){
   if(p.cat==='Make-up'||p.cat==='Probe'||p.cat==='Supplement/Probe'||p.cat==='Pflegekapseln'||p.cat==='Tool'||p.cat==='Körperpflege'||p.cat==='Handpflege'||p.cat==='Fußpflege'||p.cat==='Augenreinigung') return {type:'none',title:'Nicht automatisch nachbestellen',text:'Dieses Produkt ist kein Kernbaustein deiner Gesichtspflege. Wenn es leer ist, würde ich es nicht automatisch ersetzen.',alternatives:[],top3:genericTop3(p)};
   if(p.id==='masam-aqua') return {
     type:'buy',title:'Meine Top 3 für den Ersatz',text:'Die alte M. Asam Creme würde ich nicht weiterverwenden. Hier sind drei sinnvolle Nachfolger – mit einer klaren Nr. 1.',alternatives:[],top3:[
-      {name:'La Roche-Posay Toleriane Dermallergo Creme',why:'🥇 Meine Nr. 1: einfache, beruhigende Basiscreme für morgens und abends.',url:'https://www.larocheposay.de/toleriane/toleriane-dermallergo-creme',photo:recommendationPhoto('La Roche-Posay Toleriane Dermallergo Creme')},
-      {name:'CeraVe Feuchtigkeitsspendende Gesichtscreme',why:'🥈 Sehr gutes Preis-Leistungs-Verhältnis; Ceramide + Hyaluron + Niacinamid.',url:'https://www.cerave.de/hautpflege/gesichtspflege/feuchtigkeitsspendende-gesichtscreme',photo:recommendationPhoto('CeraVe Feuchtigkeitsspendende Gesichtscreme')},
+      {name:'La Roche-Posay Toleriane Dermallergo Creme',why:'🥇 Meine Nr. 1: einfache, beruhigende Basiscreme für morgens und abends.',url:'https://www.larocheposay.de/cicaplast/cicaplast-lavant-b5/toleriane-dermallergo-creme',photo:recommendationPhoto('La Roche-Posay Toleriane Dermallergo Creme')},
+      {name:'CeraVe Feuchtigkeitsspendende Gesichtscreme',why:'🥈 Sehr gutes Preis-Leistungs-Verhältnis; Ceramide + Hyaluron + Niacinamid.',url:'https://www.cerave.de/hautpflege/reinigung-fuer-gesicht-und-koerper/schaeumendes-reinigungsgel/feuchtigkeitsspendende-gesichtscreme',photo:recommendationPhoto('CeraVe Feuchtigkeitsspendende Gesichtscreme')},
       {name:'Eucerin UltraSensitive Beruhigende Pflege für trockene Haut',why:'🥉 Besonders minimalistische Option, wenn du es sehr schlicht möchtest.',url:'https://www.eucerin.at/produkte/sehr-empfindliche-haut/ultrasensitive-beruhigende-pflege-fuer-trockene-haut',emoji:'🤍'}
     ]
   };
   if(tags.includes('spf50')) return {type:'buy',title:'Top 3 Nachkaufoptionen',text:'SPF 50+ bleibt ein fester Bestandteil deiner Routine. Wenn du Lancaster magst, ist 1:1 nachkaufen genauso sinnvoll wie ein Wechsel.',alternatives:[],top3:genericTop3(p)};
   if(tags.includes('niacinamide')) return {type:'none',title:'Nicht nachkaufen',text:'Niacinamid ist für deine aktuelle Routine kein eigener Pflichtschritt. Du bekommst den Wirkstoff bereits über passende andere Produkte; deshalb soll dieses Serum nach dem Aufbrauchen nicht ersetzt werden.',alternatives:[],top3:[]};
-  if(tags.includes('cleansing')) return {type:'buy',title:'Reinigung nachkaufen',text:'Eine sanfte Gesichtsreinigung ist ein fester Bestandteil deiner Routine. Wenn dieses Produkt leer ist, soll es durch eine der folgenden Optionen ersetzt werden.',alternatives:[],top3:[{name:'CeraVe Hydrating Cleanser / Reinigungslotion',why:'🥇 Meine Nr. 1: sanfte, unkomplizierte Reinigung für die tägliche Routine.',url:'https://www.cerave.de/hautpflege/gesichtspflege/hydrating-cleanser',emoji:'🫧'},{name:'La Roche-Posay Toleriane Reinigung',why:'🥈 Sehr milde Alternative für empfindliche Haut.',url:'https://www.larocheposay.de/toleriane',emoji:'🫧'},{name:'Vorhandene sanfte Reinigung weiterverwenden',why:'🥉 Wenn du bereits eine passende Reinigung besitzt, wird nichts Neues benötigt.',url:'',emoji:'♻️'}]};
+  if(tags.includes('cleansing')) return {type:'buy',title:'Reinigung nachkaufen',text:'Eine sanfte Gesichtsreinigung ist ein fester Bestandteil deiner Routine. Wenn dieses Produkt leer ist, soll es durch eine der folgenden Optionen ersetzt werden.',alternatives:[],top3:[{name:'CeraVe Schäumendes Reinigungsgel',why:'🥇 Meine Nr. 1: sanfte, unkomplizierte Reinigung für die tägliche Routine.',url:'https://www.cerave.de/hautpflege/reinigung-fuer-gesicht-und-koerper/schaeumendes-reinigungsgel',emoji:'🫧'},{name:'La Roche-Posay Cicaplast Lavant B5 Reinigungsgel',why:'🥈 Sehr milde Alternative für empfindliche Haut.',url:'https://www.larocheposay.de/cicaplast/cicaplast-lavant-b5',emoji:'🫧'},{name:'Eucerin DermatoCLEAN [HYALURON] Reinigungsgel',why:'🥉 Mildes Waschgel für die tägliche Reinigung empfindlicher Haut mit Hyaluronsäure.',url:'https://www.eucerin.at/produkte/dermato-clean/erfrischendes-reinigungsgel',emoji:'🫧'}]};
   if(tags.includes('hyaluronic_acid')||tags.includes('hydration')||tags.includes('barrier')||p.cat==='Creme') return {type:'buy',title:'Nachkauf / Ersatz empfohlen',text:'Eine einfache Basiscreme bleibt ein fester Bestandteil deiner Routine. Wenn dieses Produkt leer ist, soll es durch genau eine passende Creme ersetzt werden – keine Sammlung ähnlicher Cremes.',alternatives:[],top3:genericTop3(p)};
   if(tags.some(t=>['aha','pha','bha','exfoliation'].includes(t))) return {type:'none',title:'Nicht nachkaufen',text:'Dieses Peeling wird in deiner aktuellen Routine nicht automatisch ersetzt. Deine Hautpflege funktioniert auch ohne zusätzlichen Peeling-Nachkauf; vorhandene Produkte werden aufgebraucht, danach kommt kein neues Peeling dazu.',alternatives:[],top3:[]};
   if(tags.includes('mask')||p.cat==='Augenpflege'||p.cat==='Augenpads'||p.cat==='Tuchmaske') return {type:'none',title:'NICHT NACHKAUFEN',text:'Die App hat entschieden: Deine vorhandenen Masken und Augenpads werden in einer festen Rotation aufgebraucht. Danach wird kein Ersatz gekauft.',alternatives:[],top3:[]};
