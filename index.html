@@ -242,13 +242,23 @@ let state=load();
 function load(){
   try{
     const x=JSON.parse(localStorage.getItem(KEY));
-    if(x){
-      const oldById=new Map((x.products||[]).map(p=>[p.id,p]));
-      const products=seed.map(base=>({...base,...(oldById.get(base.id)||{}),name:base.name,cat:base.cat,tags:base.tags,state:(oldById.get(base.id)?.state||base.state)}));
-      return {...x,tab:'today',products};
+    if(x && typeof x==='object'){
+      const oldById=new Map((Array.isArray(x.products)?x.products:[]).map(p=>[p.id,p]));
+      const products=seed.map(base=>({...base,...(oldById.get(base.id)||{}),name:base.name,cat:base.cat,tags:base.tags}));
+      return {
+        tab:'today',
+        phase:phases[x.phase]?x.phase:'breastfeeding',
+        products,
+        checks:(x.checks && typeof x.checks==='object')?x.checks:{},
+        shopping:Array.isArray(x.shopping)?x.shopping:shoppingDefaults.map(x=>({...x})),
+        journal:Array.isArray(x.journal)?x.journal:[],
+        ritualActive:x.ritualActive||'gua'
+      };
     }
-  }catch(e){}
-  return{tab:'today',phase:'breastfeeding',products:seed,checks:{},shopping:shoppingDefaults,journal:[]}
+  }catch(e){
+    console.warn('Gespeicherte Daten konnten nicht übernommen werden; starte mit sicheren Standarddaten.',e);
+  }
+  return {tab:'today',phase:'breastfeeding',products:seed,checks:{},shopping:shoppingDefaults.map(x=>({...x})),journal:[],ritualActive:'gua'};
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -618,7 +628,11 @@ const im=document.getElementById('import');if(im)im.onchange=()=>{const f=im.fil
 }
 function showAnalysis(n,i){const a=analyze(n,i);document.getElementById('analysis').innerHTML=`<div class="analysis"><h3>${a.blocked?'⚠️ Pausieren empfohlen':'✨ '+esc(a.slot)}</h3><p><b>Kategorie:</b> ${esc(a.cat)}</p><p><b>Erkannt:</b> ${a.tags.map(t=>`<span class="pill">${esc(tagMeta[t]||t)}</span>`).join('')||'noch nichts Eindeutiges'}</p><p>${esc(a.reason)}</p>${a.conflicts.map(c=>`<p class="warning">⚠️ ${esc(c)}</p>`).join('')}<div class="row"><button class="primary" id="acceptProduct">Übernehmen</button><button class="secondary" id="discardAnalysis">Verwerfen</button></div></div>`;document.getElementById('acceptProduct').onclick=()=>{state.products.unshift({id:'p-'+Date.now(),name:n,inci:i,cat:a.cat,tags:a.tags,state:a.blocked?'pausiert – Lebensphase':'neu · vorgeschlagen',active:!a.blocked,owned:true,needed:false,source:'Scanner'});save();render();toast('Produkt gespeichert.')};document.getElementById('discardAnalysis').onclick=()=>document.getElementById('analysis').innerHTML=''}
 async function ocr(file){const area=document.getElementById('photoArea');area.innerHTML+='<p class="muted" id="ocrStatus">📖 OCR wird geladen…</p>';try{if(!window.Tesseract){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}const r=await Tesseract.recognize(file,'eng',{logger:m=>{const el=document.getElementById('ocrStatus');if(el&&m.status)el.textContent='📖 '+m.status+' '+(m.progress?Math.round(m.progress*100)+'%':'')}});const text=r.data.text||'';document.getElementById('inci').value=text;const lines=text.split(/\\n+/).map(x=>x.trim()).filter(Boolean);if(lines[0])document.getElementById('pname').value=lines[0].slice(0,100);const el=document.getElementById('ocrStatus');if(el)el.textContent='✅ Text erkannt – bitte prüfen und dann analysieren.'}catch(e){const el=document.getElementById('ocrStatus');if(el)el.textContent='⚠️ OCR konnte nicht geladen werden. Bitte Name/INCI manuell eintragen.'}}
-render();
+try{render();}catch(e){
+  console.error(e);
+  state={tab:'today',phase:'breastfeeding',products:seed,checks:{},shopping:shoppingDefaults.map(x=>({...x})),journal:[],ritualActive:'gua'};
+  try{save();render();}catch(e2){document.getElementById('app').innerHTML='<div class="card"><h2>My Skin OS</h2><p>Die App konnte die gespeicherten Daten nicht laden. Bitte Seite einmal neu laden.</p></div>';console.error(e2);}
+}
 </script>
 </body>
 </html>
