@@ -193,6 +193,12 @@ footer{text-align:center;color:#918680;font-size:11px;padding:22px;letter-spacin
 @media(max-width:640px){.ritual-grid{grid-template-columns:1fr}}
 
 .today-ritual{padding:13px 0}.today-ritual b{font-size:16px}.today-ritual small{display:block;margin-top:4px;color:#7b706a}
+
+/* Clean task cards: no red/green swipe bars and no directional arrows */
+.swipe-bar,.swipe-indicator,.swipe-hint,.swipe-arrow,.task-arrow,.direction-arrow,
+[data-swipe],.swipe-left,.swipe-right{display:none!important}
+.task-card::before,.task-card::after,.task::before,.task::after{display:none!important;content:none!important}
+
 </style>
 </head>
 <body>
