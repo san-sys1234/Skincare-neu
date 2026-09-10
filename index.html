@@ -306,7 +306,7 @@ function routine(){
     0:[]
   };
   const serum=weeklyProductLabel(serumByDay[dow]||[], 'Kein zusätzliches Serum');
-  am.push(['Kurz reinigen/abspülen',true,'am0']);
+  am.push([`Reinigen · CeraVe Schäumendes Reinigungsgel`,cleanser,'am0']);
   if(n1 && [1,3,5].includes(dow)) am.push([`CHANEL N°1 Lotion · ${n1.name}`,true,'am1']);
   if(serum.id && dow!==4) am.push([`Serum · ${serum.label}`,true,'am2']);
   am.push([cream?`Creme · ${cream.name}`:'Creme · La Roche-Posay Toleriane Dermallergo Creme',!!cream,'am3']);
@@ -317,7 +317,8 @@ function routine(){
     const peel=(week%2===0)?firstAvailable(['garnier-pha']):firstAvailable(['chanel-sublimage-lotion']);
     const peelName=peel?peel.name:(week%2===0?'Garnier PHA + Glycolsäure':'CHANEL Sublimage Lotion Lumière Exfoliante');
     pm.push([`🫧 Peeling-Abend · ${peelName}`,!!peel,'pm1']);
-    pm.push(['Danach nur beruhigende Basis: Hyaluron + Creme',available('hyaluronic_acid'),'pm2']);
+    const hy=firstAvailable(['no-hyaluron','balea-hyaluron','chanel-hydra']);
+    pm.push([`Danach · ${hy?hy.name:'Nø Cosmetics Hyperhydration Hyaluron Serum'} + ${cream?cream.name:'La Roche-Posay Toleriane Dermallergo Creme'}`,!!hy&&!!cream,'pm2']);
   } else if(dow===2){
     const caps=firstAvailable(['drgrandel-caps']);
     pm.push([caps?`💆‍♀️ Gua Sha Glow · Dr. Grandel Cap + 5–8 Min.`:'💆‍♀️ Gua Sha Glow · 5–8 Min.',!!caps,'pm1']);
@@ -330,16 +331,17 @@ function routine(){
     const amps=['arcaya-hyaluron-glow','arcaya-hyaluron-intensive','arcaya-overnight-repair','arcaya-super-collagen','arcaya-hyaluron-ace','arcaya-ultra-quick-lift'];
     const amp=firstAvailable([amps[week%amps.length]]);
     pm.push([amp?`🌙 Sunday Beauty Reset · ${amp.name}`:'🌙 Sunday Beauty Reset',!!amp,'pm1']);
-    pm.push([cream?`Beruhigende Basiscreme · ${cream.name}`:'Beruhigende Basiscreme',!!cream,'pm2']);
+    const hy=firstAvailable(['no-hyaluron','balea-hyaluron','chanel-hydra']);
+    pm.push([`Beruhigende Basis · ${hy?hy.name:'Nø Cosmetics Hyperhydration Hyaluron Serum'} + ${cream?cream.name:'La Roche-Posay Toleriane Dermallergo Creme'}`,!!hy&&!!cream,'pm2']);
   } else if(dow===5){
     const eye=currentEyePads();
-    pm.push([eye?`👀 Eye Rescue · ${eye.name}`:'👀 Eye Rescue · Augenpads-Rotation',!!eye,'pm1']);
+    pm.push([eye?`👀 Eye Rescue · ${eye.name}`:'👀 Eye Rescue · Schaebens Hyaluron Hydrogel Augen-Pads',!!eye,'pm1']);
     const hy=firstAvailable(['chanel-hydra','no-hyaluron']);
-    pm.push([hy?`Hydration Serum · ${hy.name}`:'Hydration Serum',!!hy,'pm2']);
+    pm.push([hy?`Hydration Serum · ${hy.name}`:'Hydration Serum · Nø Cosmetics Hyperhydration Hyaluron Serum',!!hy,'pm2']);
     pm.push([cream?`Creme · ${cream.name}`:'Creme · La Roche-Posay Toleriane Dermallergo Creme',!!cream,'pm3']);
   } else {
     const hy=firstAvailable(['no-hyaluron','balea-hyaluron','chanel-hydra']);
-    pm.push([hy?`Hydration Serum · ${hy.name}`:'Hydration Serum',!!hy,'pm1']);
+    pm.push([hy?`Hydration Serum · ${hy.name}`:'Hydration Serum · Nø Cosmetics Hyperhydration Hyaluron Serum',!!hy,'pm1']);
     pm.push([cream?`Creme · ${cream.name}`:'Creme · La Roche-Posay Toleriane Dermallergo Creme',!!cream,'pm2']);
   }
   return {am,pm};
