@@ -127,16 +127,16 @@ nav button.active{
   border-top:1px solid var(--line);position:relative;touch-action:pan-y;overflow:hidden;
   background:transparent;transition:transform .18s ease,opacity .18s ease;border-radius:12px;
 }
-.check::before,.check::after{content:"";position:absolute;top:0;bottom:0;width:0;z-index:0;transition:width .08s linear}
-.check::before{left:0;background:#d9534f}.check::after{right:0;background:#45a865}
+.check::before,
+
 .check>*{position:relative;z-index:1}.check.swiping{transition:none}
 .check.done{background:#edf5ef}.check.skipped{background:#f3efec}
 .swipe-hint{font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap}
 .check-status{display:inline-block;font-size:12px;margin-left:6px;color:var(--good)}
 .check.skipped .check-status{color:#c94b48}
-.check::before{width:var(--left-width,0)}.check::after{width:var(--right-width,0)}
-.check::before{content:'↩  SKIP';color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;padding-left:14px;box-sizing:border-box}
-.check::after{content:'ERLEDIGT  ✓';color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:flex-end;padding-right:14px;box-sizing:border-box}
+
+
+
 .check:first-of-type{border-top:0}.check input{width:20px;height:20px;accent-color:var(--accent);margin-top:1px}
 .pill{
   display:inline-block;border-radius:999px;padding:4px 9px;background:#eee6e0;color:#665d58;
@@ -199,6 +199,23 @@ footer{text-align:center;color:#918680;font-size:11px;padding:22px;letter-spacin
 [data-swipe],.swipe-left,.swipe-right{display:none!important}
 .task-card::before,.task-card::after,.task::before,.task::after{display:none!important;content:none!important}
 
+
+/* v20: clean task design — no swipe bars, arrows or swipe instructions */
+.task::before,.task::after,
+.task-card::before,.task-card::after,
+.task-row::before,.task-row::after,
+.swipe::before,.swipe::after,
+.swipebar,.swipe-bar,.swipe-indicator,.swipe-hint,
+.swipe-arrow,.task-arrow,.direction-arrow,
+.swipe-left,.swipe-right,.left-swipe,.right-swipe,
+.task .arrow,.task-card .arrow,.task-row .arrow,
+[class*="swipe"],[class*="Swipe"],
+[class*="arrow"],[class*="Arrow"]{
+  display:none!important;
+  content:none!important;
+  background-image:none!important;
+}
+
 </style>
 </head>
 <body>
@@ -238,21 +255,30 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2500)}
 function analyze(name,inci=''){const text=(name+' '+inci).toLowerCase(),tags=[...new Set(rules.filter(x=>x[0].test(text)).map(x=>x[1]))];if(/glycerin|betaine|panthenol|hyaluron/.test(text)&&!tags.includes('hydration'))tags.push('hydration');if(/exfoliat|peel|peeling/.test(text)&&!tags.includes('exfoliation'))tags.push('exfoliation');const blocked=tags.includes('retinoid')&&blockedPhases.includes(state.phase);let cat=tags.includes('retinoid')?'Retinoid':tags.includes('spf50')?'SPF':tags.some(t=>['aha','pha','bha','exfoliation'].includes(t))?'Peeling':tags.includes('cleansing')?'Reinigung':tags.includes('mask')?'Maske':/cream|creme|moistur|lotion/i.test(text)?'Creme':'Serum';let slot='Manuell prüfen',reason='Die INCI ist nicht eindeutig genug. Bitte vollständig prüfen.';if(tags.includes('cleansing'))[slot,reason]=['Morgens/abends · Reinigung','Vor Seren und Cremes.'];else if(tags.includes('spf50'))[slot,reason]=['Morgens · letzter Schritt','Täglich großzügig und als letzten Pflegeschritt anwenden.'];else if(blocked)[slot,reason]=['Pausieren · aktuell nicht aktivieren','Enthält ein Retinoid; in deiner aktuellen Lebensphase nicht als Routinewirkstoff einplanen.'];else if(tags.includes('retinoid'))[slot,reason]=['Abends · langsam einschleichen','Nur nach der passenden Lebensphase und bei Unsicherheit nach fachlicher Rücksprache.'];else if(tags.some(t=>['aha','pha','bha','exfoliation'].includes(t)))[slot,reason]=['Abends · Peelingabend','Nicht mehrere Peelings am selben Abend kombinieren. Bei Reizung pausieren.'];else if(tags.includes('vitamin_c'))[slot,reason]=['Morgens · vor Creme/SPF','Optionaler antioxidativer Schritt.'];else if(tags.includes('niacinamide'))[slot,reason]=['Morgens · nach Reinigung','Passt gut in die einfache Basisroutine.'];else if(tags.some(t=>['hyaluronic_acid','ceramides','peptides'].includes(t)))[slot,reason]=['Morgens oder abends · vor Creme','Pflege-/Barriereschritt.'];const conflicts=[];if(tags.includes('retinoid')&&tags.some(t=>['aha','pha','bha','exfoliation'].includes(t)))conflicts.push('Retinoid + Peeling: nicht am selben Abend.');if(tags.filter(t=>['aha','pha','bha','exfoliation'].includes(t)).length>=2)conflicts.push('Mehrere Peeling-Wirkstoffe erkannt: langsam und getrennt einsetzen.');return{tags,cat,slot,reason,blocked,conflicts}}
 function available(tag){return state.products.some(p=>p.active!==false&&p.owned!==false&&p.state!=='abgelaufen'&&(p.tags||[]).includes(tag))}
-function routine(){return{am:[['Kurz reinigen/abspülen',true,'am0'],['Niacinamid',available('niacinamide'),'am1'],['M. Asam Hyaluron Cream',available('hydration'),'am2'],['Lancaster SPF 50',available('spf50'),'am3']],pm:[['Reinigen',available('cleansing'),'pm0'],['Nø Hyaluron Serum',available('hyaluronic_acid'),'pm1'],['M. Asam Hyaluron Cream',available('hydration'),'pm2']]}}
-function nav(){const items=[['today','Heute'],['week','Woche'],['products','Produkte'],['rituals','Beauty Rituale'],['shopping','Einkaufen'],['longplan','Langzeitplan'],['roadmap','Jahre'],['treatments','Treatments'],['settings','Mehr']];document.getElementById('nav').innerHTML=items.map(x=>`<button class="${state.tab===x[0]?'active':''}" data-tab="${x[0]}">${x[1]}</button>`).join('');document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab;save();render()})}
-function routineBlock(title,items){
-  return `<section class="card"><h2>${title}</h2><p class="muted" style="font-size:12px;margin-top:-2px">← links: skippen · rechts: erledigt →</p>${items.map(x=>{
-    const key=x[2], status=state.checks[key];
-    const done=status==='done'||status===true, skipped=status==='skipped';
-    return `<div class="check ${done?'done':''} ${skipped?'skipped':''}" data-swipe="${key}">
-      <input type="checkbox" ${done?'checked':''} ${x[1]?'':'disabled'} data-check="${key}">
-      <span>${esc(x[0])} ${x[1]?'':'<span class="pill buy">🛍️ fehlt · kaufen</span>'}
-      ${done?'<span class="check-status">✓ erledigt</span>':skipped?'<span class="check-status">↩ übersprungen</span>':''}</span>
-      <span class="swipe-hint">← / →</span>
-    </div>`;
-  }).join('')}</section>`;
+function routine(){
+  const am=[
+    ['Kurz reinigen/abspülen',true,'am0'],
+    ['Niacinamid',available('niacinamide'),'am1'],
+    ['M. Asam Hyaluron Cream',available('hydration'),'am2'],
+    ['Lancaster SPF 50',available('spf50'),'am3']
+  ];
+  const pm=[
+    ['Reinigen',available('cleansing'),'pm0'],
+    ['Nø Hyaluron Serum',available('hyaluronic_acid'),'pm1'],
+    ['M. Asam Hyaluron Cream',available('hydration'),'pm2']
+  ];
+  const d=new Date().getDay();
+  const extras={
+    0:[['🌙 Sunday Beauty Reset · 15 Min.',true,'ritual-sunday']],
+    2:[['💆‍♀️ Gua Sha Glow · 5–8 Min.',true,'ritual-guasha']],
+    4:[['🫧 Peeling-Abend · Garnier PHA + Glycolsäure',available('peeling'),'ritual-peeling']],
+    5:[['👀 Eye Rescue · optional 5 Min.',true,'ritual-eyes']],
+    6:[['💧 Hydration Reset · 10 Min.',true,'ritual-hydration']]
+  };
+  if(extras[d]) pm.push(extras[d][0]);
+  return {am,pm};
 }
-function renderToday(){const r=routine(),open=state.shopping.filter(x=>!x.bought);return `<div class="hero"><div><h2>Heute 🥰</h2><p><b>${phases[state.phase][0]}</b> · ${phases[state.phase][1]}</p></div><select id="phase">${Object.entries(phases).map(([k,v])=>`<option value="${k}" ${k===state.phase?'selected':''}>${v[0]}</option>`).join('')}</select></div><div class="notice">👆 <b>Tages-Checkliste:</b> Wische einen Schritt <b>nach rechts</b> für „erledigt“ oder <b>nach links</b> für „skippen“. Du kannst den Schritt danach weiterhin über die Checkliste zurücksetzen.</div><div class="card"><h2>🛍️ Einkaufen – nur wenn etwas wirklich fehlt</h2><p class="muted">Die Einkaufsliste bleibt bewusst getrennt von deiner heutigen Routine.</p>${open.slice(0,4).map(x=>`<div class="shopping"><div><b>${esc(x.name)}</b><small class="muted" style="display:block">${esc(x.reason)}</small></div><button class="secondary small" data-go="shopping">Zur Liste</button></div>`).join('')||'<p>✨ Deine Einkaufsliste ist aktuell leer.</p>'}</div>${routineBlock('☀️ Morgen',r.am)}${routineBlock('🌙 Abend',r.pm)}<div class="card"><div class="row"><div><h2>✨ Beauty-Ritual heute</h2><p class="muted">Nur wenn du Zeit und Lust hast.</p></div><button class="secondary small" data-go="rituals">Beauty Rituale</button></div><div id="todayRitual"></div></div><div class="card"><button class="primary" data-go="rituals">✨ Beauty Rituale öffnen</button></div><div class="card"><button class="secondary" id="resetDay">↺ Tages-Checkliste zurücksetzen</button></div><div class="notice">💡 <b>Anti-Aging-Fokus:</b> SPF konsequent. Stärkere Wirkstoffe kommen erst in die passende Lebensphase – nicht alles gleichzeitig.</div><div class="card"><div class="row"><div><h2>Haut-Tagebuch</h2><p class="muted">Ein kurzer Eintrag reicht.</p></div><button class="secondary" id="journalAdd">＋ Heute dokumentieren</button></div>${state.journal.slice(0,3).map(j=>`<div class="journal"><b>${esc(j.date)}</b>${j.note?` · ${esc(j.note)}`:''}</div>`).join('')}</div>`}
+function renderToday(){const r=routine(),open=state.shopping.filter(x=>!x.bought);return `<div class="hero"><div><h2>Heute 🥰</h2><p><b>${phases[state.phase][0]}</b> · ${phases[state.phase][1]}</p></div><select id="phase">${Object.entries(phases).map(([k,v])=>`<option value="${k}" ${k===state.phase?'selected':''}>${v[0]}</option>`).join('')}</select></div><div class="notice">✨ <b>Heute:</b> Deine Beauty-Schritte sind direkt in Morgen und Abend integriert. Zusatzrituale sind bewusst nur an passenden Tagen eingeplant.</div><div class="card"><h2>🛍️ Einkaufen – nur wenn etwas wirklich fehlt</h2><p class="muted">Die Einkaufsliste bleibt bewusst getrennt von deiner heutigen Routine.</p>${open.slice(0,4).map(x=>`<div class="shopping"><div><b>${esc(x.name)}</b><small class="muted" style="display:block">${esc(x.reason)}</small></div><button class="secondary small" data-go="shopping">Zur Liste</button></div>`).join('')||'<p>✨ Deine Einkaufsliste ist aktuell leer.</p>'}</div>${routineBlock('☀️ Morgen',r.am)}${routineBlock('🌙 Abend',r.pm)}<div class="card"><div class="row"><div><h2>✨ Beauty-Ritual heute</h2><p class="muted">Nur wenn du Zeit und Lust hast.</p></div><button class="secondary small" data-go="rituals">Beauty Rituale</button></div><div id="todayRitual"></div></div><div class="card"><button class="secondary" id="resetDay">↺ Tages-Checkliste zurücksetzen</button></div><div class="notice">💡 <b>Anti-Aging-Fokus:</b> SPF konsequent. Stärkere Wirkstoffe kommen erst in die passende Lebensphase – nicht alles gleichzeitig.</div><div class="card"><div class="row"><div><h2>Haut-Tagebuch</h2><p class="muted">Ein kurzer Eintrag reicht.</p></div><button class="secondary" id="journalAdd">＋ Heute dokumentieren</button></div>${state.journal.slice(0,3).map(j=>`<div class="journal"><b>${esc(j.date)}</b>${j.note?` · ${esc(j.note)}`:''}</div>`).join('')}</div>`}
 function renderWeek(){const days=[
 ['Montag','🤍','Basisroutine','Kein Zusatzritual – Erholungstag.'],
 ['Dienstag','💆‍♀️','Gua Sha Glow','5–8 Min.; sanft und mit ausreichend Gleitfähigkeit.'],
