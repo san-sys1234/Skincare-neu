@@ -300,12 +300,20 @@ function load(){
   try{
     const x=JSON.parse(localStorage.getItem(KEY));
     if(x && typeof x==='object'){
-      const oldById=new Map((Array.isArray(x.products)?x.products:[]).map(p=>[p.id,p]));
-      const products=seed.map(base=>{const saved=oldById.get(base.id)||{}; const merged={...base,...saved,name:base.name,cat:base.cat,tags:base.tags}; if(base.id==='dado-purderm-gel') merged.routineRole=null; if(saved.owned===false && !/leer|ausmisten|nicht nach|entfernt/i.test(String(saved.state||''))){ merged.owned=base.owned; merged.active=base.active; merged.state=base.state; } if(base.id==='lan-spf50' && saved.owned===false && !/leer|ausmisten|nicht nach/i.test(String(saved.state||''))){ merged.owned=true; merged.active=true; merged.state='täglich'; }
+      const removedIds=new Set(Array.isArray(x.removedProductIds)?x.removedProductIds:[]);
+      const oldProducts=Array.isArray(x.products)?x.products:[];
+      const oldById=new Map(oldProducts.map(p=>[p.id,p]));
+      const seedIds=new Set(seed.map(p=>p.id));
+      // Entfernte Seed-Produkte dürfen bei einem Reload niemals wieder aus dem Seed auftauchen.
+      const products=seed.filter(base=>!removedIds.has(base.id)).map(base=>{const saved=oldById.get(base.id)||{}; const merged={...base,...saved,name:base.name,cat:base.cat,tags:base.tags}; if(base.id==='dado-purderm-gel') merged.routineRole=null; if(saved.owned===false && !/leer|ausmisten|nicht nach|entfernt/i.test(String(saved.state||''))){ merged.owned=base.owned; merged.active=base.active; merged.state=base.state; } if(base.id==='lan-spf50' && saved.owned===false && !/leer|ausmisten|nicht nach/i.test(String(saved.state||''))){ merged.owned=true; merged.active=true; merged.state='täglich'; }
         // Diese beiden Produkte wurden durch die frühere Fehlkennzeichnung fälschlich als fehlend
         // behandelt. Solange sie nicht ausdrücklich als leer/ausgemistet markiert wurden, bleiben sie vorhanden.
         if((base.id==='lan-spf50'||base.id==='drgrandel-caps') && saved.owned===false && !/leer|ausmisten|nicht nach|entfernt/i.test(String(saved.state||''))){ merged.owned=true; merged.active=true; merged.state=base.state; }
         return merged;});
+      // Eigene / neu gekaufte Produkte aus dem gespeicherten Bestand erhalten bleiben.
+      // Bereits ausgemistete Produkte werden auch hier konsequent ausgeschlossen.
+      const customProducts=oldProducts.filter(p=>p && p.id && !seedIds.has(p.id) && !removedIds.has(p.id));
+      customProducts.forEach(cp=>{if(!products.some(p=>p.id===cp.id)) products.push(cp);});
       // Neuer gekaufter Basisreiniger: Neutrogena Hydro Boost Aqua Reinigungsgel.
       const neutrogenaName='Neutrogena Hydro Boost Aqua Reinigungsgel';
       if(!products.some(p=>p.name.toLowerCase()===neutrogenaName.toLowerCase())){
@@ -325,13 +333,14 @@ function load(){
         checkDate:localDateKey(),
         shopping:cleanShopping,
         journal:Array.isArray(x.journal)?x.journal:[],
-        ritualActive:x.ritualActive||'gua'
+        ritualActive:x.ritualActive||'gua',
+        removedProductIds:[...removedIds]
       };
     }
   }catch(e){
     console.warn('Gespeicherte Daten konnten nicht übernommen werden; starte mit sicheren Standarddaten.',e);
   }
-  return {tab:'today',phase:'breastfeeding',products:seed,checks:{},checkDate:localDateKey(),shopping:shoppingDefaults.map(x=>({...x})),journal:[],ritualActive:'gua'};
+  return {tab:'today',phase:'breastfeeding',products:seed,checks:{},checkDate:localDateKey(),shopping:shoppingDefaults.map(x=>({...x})),journal:[],ritualActive:'gua',removedProductIds:[]};
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function ensureShoppingForMissing(){
@@ -917,7 +926,7 @@ document.querySelectorAll('[data-save-product]').forEach(e=>e.onclick=()=>{
  if(p.state.toLowerCase().includes('pausiert'))p.active=false;
  save();render();toast('Produkt geändert.');
 });
-document.querySelectorAll('[data-delete]').forEach(e=>e.onclick=()=>{const p=state.products.find(x=>x.id===e.dataset.delete);if(p&&confirm('„'+p.name+'“ wirklich aus deiner Sammlung ausmisten?')){state.products=state.products.filter(x=>x.id!==p.id);save();render();toast('Produkt ausgemistet.') }});
+document.querySelectorAll('[data-delete]').forEach(e=>e.onclick=()=>{const p=state.products.find(x=>x.id===e.dataset.delete);if(p&&confirm('„'+p.name+'“ wirklich aus deiner Sammlung ausmisten?')){state.removedProductIds=Array.isArray(state.removedProductIds)?state.removedProductIds:[];if(!state.removedProductIds.includes(p.id)) state.removedProductIds.push(p.id);state.products=state.products.filter(x=>x.id!==p.id);save();render();toast('Produkt ausgemistet – es bleibt dauerhaft entfernt.')}});
 document.querySelectorAll('[data-toggle]').forEach(e=>e.onclick=()=>{state.products=state.products.map(p=>p.id===e.dataset.toggle?{...p,active:!p.active}:p);save();render()});
 
 document.querySelectorAll('[data-empty]').forEach(e=>e.onclick=()=>{
@@ -1016,7 +1025,7 @@ document.addEventListener('visibilitychange',()=>{
 });
 try{render();}catch(e){
   console.error(e);
-  state={tab:'today',phase:'breastfeeding',products:seed,checks:{},checkDate:localDateKey(),shopping:shoppingDefaults.map(x=>({...x})),journal:[],ritualActive:'gua'};
+  state={tab:'today',phase:'breastfeeding',products:seed,checks:{},checkDate:localDateKey(),shopping:shoppingDefaults.map(x=>({...x})),journal:[],ritualActive:'gua',removedProductIds:[]};
   try{save();render();}catch(e2){document.getElementById('app').innerHTML='<div class="card"><h2>My Skin OS</h2><p>Die App konnte die gespeicherten Daten nicht laden. Bitte Seite einmal neu laden.</p></div>';console.error(e2);}
 }
 </script>
