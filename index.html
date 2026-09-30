@@ -301,6 +301,21 @@ function load(){
     const x=JSON.parse(localStorage.getItem(KEY));
     if(x && typeof x==='object'){
       const removedIds=new Set(Array.isArray(x.removedProductIds)?x.removedProductIds:[]);
+      // Einmalige Bestandsbereinigung: Diese Produkte wurden bereits ausdrücklich
+      // als leer/abgelaufen bzw. nicht mehr im Bestand entschieden. Sie dürfen
+      // deshalb auch dann nicht aus dem alten Seed zurückkehren, wenn eine ältere
+      // Version noch keine removedProductIds gespeichert hatte.
+      const legacyRetiredIds=new Set([
+        'masam-aqua',
+        'no-niacinamide',
+        'no-hyaluron',
+        'drgrandel-caps',
+        'schaebens-cooling',
+        'face-mask-aloe',
+        'marionnaud-hydrate',
+        'loreal-age-perfect'
+      ]);
+      legacyRetiredIds.forEach(id=>removedIds.add(id));
       const oldProducts=Array.isArray(x.products)?x.products:[];
       const oldById=new Map(oldProducts.map(p=>[p.id,p]));
       const seedIds=new Set(seed.map(p=>p.id));
@@ -325,7 +340,7 @@ function load(){
       // Alte CeraVe-Einkäufe aus früheren Versionen nicht weiterführen.
       const saved=Array.isArray(x.shopping)?x.shopping.filter(i=>i.id!=='shop-niacinamide'):[];
       const cleanShopping=saved.filter(i=>!(/cerave schäumendes reinigungsgel/i.test(String(i.name||''))||i.id==='shop-cleanser'));
-      return {
+      const nextState={
         tab:'today',
         phase:phases[x.phase]?x.phase:'breastfeeding',
         products,
@@ -336,6 +351,10 @@ function load(){
         ritualActive:x.ritualActive||'gua',
         removedProductIds:[...removedIds]
       };
+      // Die bereinigte Produktliste und die entfernten IDs sofort speichern,
+      // damit die Bereinigung nicht nur für diesen Reload gilt.
+      try{localStorage.setItem(KEY,JSON.stringify(nextState))}catch(e){}
+      return nextState;
     }
   }catch(e){
     console.warn('Gespeicherte Daten konnten nicht übernommen werden; starte mit sicheren Standarddaten.',e);
